@@ -1,0 +1,218 @@
+{
+  "queries": [
+    {
+      "name": "RACF - All SURROGAT Relationships",
+      "queryList": [
+        {
+          "final": true,
+          "query": "MATCH (u)-[r:HasPermission]->(res:Resource)-[t:TargetsUser]->(target:User) WHERE res.class = 'SURROGAT' RETURN u, r, res, t, target"
+        }
+      ]
+    },
+    {
+      "name": "RACF - All UNIXPRIV Relationships",
+      "queryList": [
+        {
+          "final": true,
+          "query": "MATCH (u)-[r:HasPermission]->(res:Resource)-[t:TargetsUser]->(target:User) WHERE res.class = 'UNIXPRIV' RETURN u, r, res, t, target"
+        }
+      ]
+    },
+    {
+      "name": "RACF - All Group Memberships (Users)",
+      "queryList": [
+        {
+          "final": true,
+          "query": "MATCH (u:User)-[r:MemberOf]->(g:Group) RETURN u, r, g"
+        }
+      ]
+    },
+    {
+      "name": "RACF - Full Group Hierarchy (SubGroupOf)",
+      "queryList": [
+        {
+          "final": true,
+          "query": "MATCH (sg:Group)-[r:SubGroupOf]->(pg:Group) RETURN sg, r, pg"
+        }
+      ]
+    },
+    {
+      "name": "RACF - All Group Relationships (Members + Subgroups)",
+      "queryList": [
+        {
+          "final": true,
+          "query": "MATCH (n)-[r:MemberOf|SubGroupOf]->(g:Group) RETURN n, r, g"
+        }
+      ]
+    },
+    {
+      "name": "RACF - SURROGAT Chain (User -> Profile -> Target User)",
+      "queryList": [
+        {
+          "final": true,
+          "query": "MATCH (u:User)-[r:HasPermission]->(res:Resource)-[t:TargetsUser]->(target:User) WHERE res.class = 'SURROGAT' RETURN u, r, res, t, target"
+        }
+      ]
+    },
+    {
+      "name": "RACF - Users with SURROGAT Access to Privileged Users",
+      "queryList": [
+        {
+          "final": true,
+          "query": "MATCH (u:User)-[r:HasPermission]->(res:Resource)-[t:TargetsUser]->(target:User) WHERE res.class = 'SURROGAT' AND (res.name CONTAINS 'ADMIN' OR res.name CONTAINS 'SYS' OR res.name CONTAINS 'IBMUSER') RETURN u, r, res, t, target"
+        }
+      ]
+    },
+    {
+      "name": "RACF - Revoked Users",
+      "queryList": [
+        {
+          "final": true,
+          "query": "MATCH (u:User) WHERE u.revoked = true RETURN u"
+        }
+      ]
+    },
+    {
+      "name": "RACF - Users with SPECIAL Attribute",
+      "queryList": [
+        {
+          "final": true,
+          "query": "MATCH (u:User) WHERE u.attributes CONTAINS 'SPECIAL' RETURN u"
+        }
+      ]
+    },
+    {
+      "name": "RACF - Users with OPERATIONS Attribute",
+      "queryList": [
+        {
+          "final": true,
+          "query": "MATCH (u:User) WHERE u.attributes CONTAINS 'OPERATIONS' RETURN u"
+        }
+      ]
+    },
+    {
+      "name": "RACF - Users with AUDITOR Attribute",
+      "queryList": [
+        {
+          "final": true,
+          "query": "MATCH (u:User) WHERE u.attributes CONTAINS 'AUDITOR' RETURN u"
+        }
+      ]
+    },
+    {
+      "name": "RACF - All Highly Privileged Users (SPECIAL or OPERATIONS)",
+      "queryList": [
+        {
+          "final": true,
+          "query": "MATCH (u:User) WHERE u.attributes CONTAINS 'SPECIAL' OR u.attributes CONTAINS 'OPERATIONS' RETURN u"
+        }
+      ]
+    },
+    {
+      "name": "RACF - Users with No Group Membership",
+      "queryList": [
+        {
+          "final": true,
+          "query": "MATCH (u:User) WHERE NOT (u)-[:MemberOf]->(:Group) RETURN u"
+        }
+      ]
+    },
+    {
+      "name": "RACF - All Relationships for a Specific User",
+      "queryList": [
+        {
+          "final": false,
+          "title": "Select a User",
+          "query": "MATCH (u:User) RETURN u.name ORDER BY u.name"
+        },
+        {
+          "final": true,
+          "query": "MATCH (u:User {name: $result})-[r]-(n) RETURN u, r, n"
+        }
+      ]
+    },
+    {
+      "name": "RACF - All Members and Subgroups of a Specific Group",
+      "queryList": [
+        {
+          "final": false,
+          "title": "Select a Group",
+          "query": "MATCH (g:Group) RETURN g.name ORDER BY g.name"
+        },
+        {
+          "final": true,
+          "query": "MATCH (n)-[r:MemberOf|SubGroupOf]->(g:Group {name: $result}) RETURN n, r, g"
+        }
+      ]
+    },
+    {
+      "name": "RACF - All DATASET Relationships",
+      "queryList": [
+        {
+          "final": true,
+          "query": "MATCH (u)-[r:HasDatasetAccess]->(d:Dataset) RETURN u, r, d"
+        }
+      ]
+    },
+    {
+      "name": "RACF - Datasets with ALTER Access",
+      "queryList": [
+        {
+          "final": true,
+          "query": "MATCH (u)-[r:HasDatasetAccess]->(d:Dataset) WHERE r.access = 'ALTER' RETURN u, r, d"
+        }
+      ]
+    },
+    {
+      "name": "RACF - Datasets with Public UACC (Not NONE)",
+      "queryList": [
+        {
+          "final": true,
+          "query": "MATCH (d:Dataset) WHERE d.uacc <> 'NONE' RETURN d ORDER BY d.uacc"
+        }
+      ]
+    },
+    {
+      "name": "RACF - All Dataset Access for a Specific User",
+      "queryList": [
+        {
+          "final": false,
+          "title": "Select a User",
+          "query": "MATCH (u:User) RETURN u.name ORDER BY u.name"
+        },
+        {
+          "final": true,
+          "query": "MATCH (u:User {name: $result})-[r:HasDatasetAccess]->(d:Dataset) RETURN u, r, d"
+        }
+      ]
+    },
+    {
+      "name": "RACF - All Users with Access to a Specific Dataset",
+      "queryList": [
+        {
+          "final": false,
+          "title": "Select a Dataset",
+          "query": "MATCH (d:Dataset) RETURN d.name ORDER BY d.name"
+        },
+        {
+          "final": true,
+          "query": "MATCH (u)-[r:HasDatasetAccess]->(d:Dataset {name: $result}) RETURN u, r, d"
+        }
+      ]
+    },
+    {
+      "name": "RACF - All SURROGAT and UNIXPRIV Access for a Specific User",
+      "queryList": [
+        {
+          "final": false,
+          "title": "Select a User",
+          "query": "MATCH (u:User) RETURN u.name ORDER BY u.name"
+        },
+        {
+          "final": true,
+          "query": "MATCH (u:User {name: $result})-[r:HasPermission]->(res:Resource)-[t:TargetsUser]->(target:User) RETURN u, r, res, t, target"
+        }
+      ]
+    }
+  ]
+}
