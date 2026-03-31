@@ -23,10 +23,10 @@ def collect_datasets(client, delay, output_dir):
         parts = line.split()
         if not parts:
             continue
-        # Two-column format: "DATASET  <name>" – take the second token
-        if len(parts) == 2 and parts[0].upper() == "DATASET":
-            profile_names.append(parts[1])
-        # Single-column format: just the profile name on its own line
+        # Generic profile: "DATASET.** (G)" – name is first token, second is "(G)"
+        if len(parts) == 2 and parts[1] == "(G)":
+            profile_names.append(parts[0])
+        # Discrete profile: just the name on its own line
         elif len(parts) == 1 and parts[0].upper() not in ("DATASET", "CLASS", "NAME"):
             if not set(parts[0]).issubset(set("-=")):  # skip separator lines
                 profile_names.append(parts[0])
@@ -40,7 +40,8 @@ def collect_datasets(client, delay, output_dir):
 
     combined_output = []
     for name in profile_names:
-        _, stdout, stderr = client.exec_command(f"tsocmd \"ld da('{name}') all\"")
+        generic_kw = " generic" if any(c in name for c in ('*', '%')) else ""
+        _, stdout, stderr = client.exec_command(f"tsocmd \"ld da('{name}') all{generic_kw}\"")
         out = stdout.read().decode('utf-8', errors='replace')
         err = stderr.read().decode('utf-8', errors='replace')
         if out:
