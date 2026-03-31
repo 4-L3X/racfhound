@@ -511,6 +511,15 @@ def build_graph(groups, users, surrogat_profiles, unixpriv_profiles, dataset_pro
             graph.add_edge_without_validation(
                 Edge(start_node=entry["user"], end_node=did, kind="HasDatasetAccess", properties=ep)
             )
+        # Owner implicitly has ALTER access to their dataset profile
+        if dp["owner"] and dp["owner"] not in {e["user"] for e in dp["acl"]}:
+            _ensure_user(graph, dp["owner"])
+            ep = Properties()
+            ep.set_property("access", "ALTER")
+            ep.set_property("source", "OWNER")
+            graph.add_edge_without_validation(
+                Edge(start_node=dp["owner"], end_node=did, kind="HasDatasetAccess", properties=ep)
+            )
 
     # ── UACC edges: universal access applies to every user ────────────────────
     # Do this after all user nodes exist so we don't miss late-added stubs.
