@@ -5,13 +5,26 @@ import sys
 import os
 import time
 
+ALL_CLASSES = ["GROUP", "USER", "SURROGAT", "UNIXPRIV", "FACILITY", "DATASET", "TCICSTRN", "GCICSTRN"]
+
+# Simple tsocmd commands for non-dataset classes
+SIMPLE_COMMANDS = {
+    "GROUP":    ('tsocmd "LISTGRP *"',              "rhoundoutput_GROUP.txt"),
+    "USER":     ('tsocmd "LISTUSER *"',             "rhoundoutput_USER.txt"),
+    "SURROGAT": ('tsocmd "RLIST SURROGAT * ALL"',   "rhoundoutput_SURROGAT.txt"),
+    "UNIXPRIV": ('tsocmd "RLIST UNIXPRIV * ALL"',   "rhoundoutput_UNIXPRIV.txt"),
+    "FACILITY": ('tsocmd "RLIST FACILITY * ALL"',   "rhoundoutput_FACILITY.txt"),
+    "TCICSTRN": ('tsocmd "RLIST TCICSTRN * ALL"',   "rhoundoutput_TCICSTRN.txt"),
+    "GCICSTRN": ('tsocmd "RLIST GCICSTRN * ALL"',   "rhoundoutput_GCICSTRN.txt"),
+}
+
 
 def collect_datasets(client, delay, output_dir):
-    """Two-step dataset enumeration: SEARCH to list profiles, then LD DA per profile."""
+    """Two-step dataset enumeration: SEARCH to list profiles, then LISTDSD per profile."""
 
     # Step 1 – get all dataset profile names
     print("[datasets] Searching for dataset profiles...")
-    _, stdout, stderr = client.exec_command('tsocmd "sr class(dataset) filter(**)"')
+    _, stdout, stderr = client.exec_command('tsocmd "SEARCH CLASS(DATASET) FILTER(**)"')
     search_out = stdout.read().decode('utf-8', errors='replace')
     search_err = stderr.read().decode('utf-8', errors='replace')
     if search_err:
@@ -35,13 +48,13 @@ def collect_datasets(client, delay, output_dir):
 
     # Step 2 – enumerate each profile individually
     if delay > 0:
-        print(f"[rate-limit] Sleeping {delay}s before ld da enumeration...")
+        print(f"[rate-limit] Sleeping {delay}s before profile enumeration...")
         time.sleep(delay)
 
     combined_output = []
     for name in profile_names:
-        generic_kw = " generic" if any(c in name for c in ('*', '%')) else ""
-        _, stdout, stderr = client.exec_command(f"tsocmd \"ld da('{name}') all{generic_kw}\"")
+        generic_kw = " GENERIC" if any(c in name for c in ('*', '%')) else ""
+        _, stdout, stderr = client.exec_command(f"tsocmd \"LISTDSD DA('{name}') ALL{generic_kw}\"")
         out = stdout.read().decode('utf-8', errors='replace')
         err = stderr.read().decode('utf-8', errors='replace')
         if out:
@@ -55,7 +68,10 @@ def collect_datasets(client, delay, output_dir):
     print(f"[datasets] Output saved to {output_path}")
 
 
-def collect(host, username, password=None, key_path=None, port=22, delay=0.0):
+def collect(host, username, password=None, key_path=None, port=22, delay=0.0, classes=None):
+    if classes is None:
+        classes = ALL_CLASSES
+
     client = paramiko.SSHClient()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
@@ -75,16 +91,10 @@ def collect(host, username, password=None, key_path=None, port=22, delay=0.0):
 
         client.connect(**connect_kwargs)
 
-        commands = [
-            ('tsocmd "lg *"', "rhoundoutput_GROUP.txt"),
-            ('tsocmd "lu *"', "rhoundoutput_USER.txt"),
-            ('tsocmd "rlist surrogat * all"', "rhoundoutput_SURROGAT.txt"),
-            ('tsocmd "rlist unixpriv * all"', "rhoundoutput_UNIXPRIV.txt"),
-        ]
-
         os.makedirs("output", exist_ok=True)
 
-        for i, (command, output_file) in enumerate(commands):
+        simple = [(cls, *SIMPLE_COMMANDS[cls]) for cls in classes if cls in SIMPLE_COMMANDS]
+        for i, (cls, command, output_file) in enumerate(simple):
             if i > 0 and delay > 0:
                 print(f"[rate-limit] Sleeping {delay}s before next command...")
                 time.sleep(delay)
@@ -98,21 +108,25 @@ def collect(host, username, password=None, key_path=None, port=22, delay=0.0):
                 output_path = os.path.join("output", output_file)
                 with open(output_path, "w") as f:
                     f.write(output)
-                print(f"[{command}] Output saved to {output_path}")
+                print(f"[{cls}] Output saved to {output_path}")
             if errors:
-                print(f"[{command}] STDERR: {errors}", file=sys.stderr)
+                print(f"[{cls}] STDERR: {errors}", file=sys.stderr)
 
-        if delay > 0:
-            print(f"[rate-limit] Sleeping {delay}s before dataset enumeration...")
-            time.sleep(delay)
-        collect_datasets(client, delay, "output")
+        if "DATASET" in classes:
+            if simple and delay > 0:
+                print(f"[rate-limit] Sleeping {delay}s before dataset enumeration...")
+                time.sleep(delay)
+            collect_datasets(client, delay, "output")
 
     finally:
         client.close()
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='SSH into the mainframe and run tsocmd to collect RACF data')
+    parser = argparse.ArgumentParser(
+        description='SSH into the mainframe and run tsocmd to collect RACF data',
+        formatter_class=argparse.RawTextHelpFormatter,
+    )
     parser.add_argument("host", help="Target hostname or IP")
     parser.add_argument("username", help="SSH username")
     parser.add_argument("--password", help="SSH password")
@@ -121,5 +135,25 @@ if __name__ == "__main__":
     parser.add_argument("--delay", type=float, default=0.0, metavar="SECONDS",
                         help="Seconds to wait between commands (default: 0)")
 
+    class_group = parser.add_mutually_exclusive_group()
+    class_group.add_argument(
+        "--all", dest="all_classes", action="store_true",
+        help="Enumerate all classes (default behaviour)",
+    )
+    class_group.add_argument(
+        "--classes", nargs="+", metavar="CLASS",
+        help=f"Classes to enumerate (choices: {', '.join(ALL_CLASSES)})",
+    )
+
     args = parser.parse_args()
-    collect(args.host, args.username, args.password, args.key_path, args.port, args.delay)
+
+    if args.classes:
+        selected = [c.upper() for c in args.classes]
+        invalid = [c for c in selected if c not in ALL_CLASSES]
+        if invalid:
+            parser.error(f"Unknown class(es): {', '.join(invalid)}. Valid choices: {', '.join(ALL_CLASSES)}")
+        classes = selected
+    else:
+        classes = ALL_CLASSES
+
+    collect(args.host, args.username, args.password, args.key_path, args.port, args.delay, classes)

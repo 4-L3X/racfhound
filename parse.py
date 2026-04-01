@@ -1,26 +1,29 @@
 #!/usr/bin/env python3
 """
-Parse RACF output files into BloodHound OpenGraph JSON.
+Parse RACF enumeration output files into BloodHound OpenGraph JSON.
 
 Sources
 -------
-  rhoundoutput_GROUP.txt     – LISTGRP  (tsocmd "lg *")
-  rhoundoutput_USER.txt      – LISTUSER (tsocmd "lu *")
-  rhoundoutput_SURROGAT.txt  – RLIST SURROGAT (tsocmd "rlist surrogat * all")
-  rhoundoutput_UNIXPRIV.txt  – RLIST UNIXPRIV (tsocmd "rlist unixpriv * all")
-  rhoundoutput_DATASET.txt   – LISTDSD  (tsocmd "ld ** all generic")
+  rhoundoutput_GROUP.txt     – LISTGRP  (tsocmd "LISTGRP *")
+  rhoundoutput_USER.txt      – LISTUSER (tsocmd "LISTUSER *")
+  rhoundoutput_SURROGAT.txt  – RLIST SURROGAT  (tsocmd "RLIST SURROGAT * ALL")
+  rhoundoutput_UNIXPRIV.txt  – RLIST UNIXPRIV  (tsocmd "RLIST UNIXPRIV * ALL")
+  rhoundoutput_FACILITY.txt  – RLIST FACILITY  (tsocmd "RLIST FACILITY * ALL")
+  rhoundoutput_DATASET.txt   – LISTDSD  (tsocmd "LISTDSD DA('DATA.SET') ALL GENERIC")
+  rhoundoutput_TCICSTRN.txt  – RLIST TCICSTRN  (tsocmd "RLIST TCICSTRN * ALL")
+  rhoundoutput_GCICSTRN.txt  – RLIST GCICSTRN  (tsocmd "RLIST GCICSTRN * ALL")
 
 Nodes
 -----
   Group       – RACF group
   User        – RACF user
-  Resource    – SURROGAT or UNIXPRIV profile
-  Dataset     – RACF generic dataset profile
+  Resource    – SURROGAT, UNIXPRIV, FACILITY or CICS profiles
+  Dataset     – RACF dataset profile
 
 Edges
 -----
   MemberOf        – User/SubGroup -> Group
-  HasPermission   – User -> Resource (SURROGAT or UNIXPRIV profile)
+  HasPermission   – User -> Resource (SURROGAT, UNIXPRIV, or FACILITY profile)
   HasDatasetAccess – User -> Dataset
   TargetsUser     – Resource (SURROGAT/UNIXPRIV) -> User (derived from profile name prefix)
 """
@@ -33,10 +36,13 @@ DIR = os.path.dirname(__file__)
 OUTPUT_DIR    = os.path.join(DIR, "output")
 GROUP_FILE    = os.path.join(OUTPUT_DIR, "rhoundoutput_GROUP.txt")
 USER_FILE     = os.path.join(OUTPUT_DIR, "rhoundoutput_USER.txt")
-SURROGAT_FILE = os.path.join(OUTPUT_DIR, "rhoundoutput_SURROGAT.txt")
-UNIXPRIV_FILE = os.path.join(OUTPUT_DIR, "rhoundoutput_UNIXPRIV.txt")
-DATASET_FILE  = os.path.join(OUTPUT_DIR, "rhoundoutput_DATASET.txt")
-OUTPUT_FILE   = os.path.join(OUTPUT_DIR, "graph.json")
+SURROGAT_FILE  = os.path.join(OUTPUT_DIR, "rhoundoutput_SURROGAT.txt")
+UNIXPRIV_FILE  = os.path.join(OUTPUT_DIR, "rhoundoutput_UNIXPRIV.txt")
+FACILITY_FILE  = os.path.join(OUTPUT_DIR, "rhoundoutput_FACILITY.txt")
+DATASET_FILE   = os.path.join(OUTPUT_DIR, "rhoundoutput_DATASET.txt")
+TCICSTRN_FILE  = os.path.join(OUTPUT_DIR, "rhoundoutput_TCICSTRN.txt")
+GCICSTRN_FILE  = os.path.join(OUTPUT_DIR, "rhoundoutput_GCICSTRN.txt")
+OUTPUT_FILE   = os.path.join(OUTPUT_DIR, "racfhound.json")
 
 
 # ── Parsers ────────────────────────────────────────────────────────────────────
@@ -369,7 +375,7 @@ def parse_datasets(text):
     return profiles
 
 
-def build_graph(groups, users, surrogat_profiles, unixpriv_profiles, dataset_profiles):
+def build_graph(groups, users, surrogat_profiles, unixpriv_profiles, facility_profiles, dataset_profiles, tcicstrn_profiles, gcicstrn_profiles):
     graph = OpenGraph(source_kind="RACF")
 
     # ── Group nodes ────────────────────────────────────────────────────────────
@@ -490,6 +496,72 @@ def build_graph(groups, users, surrogat_profiles, unixpriv_profiles, dataset_pro
             Edge(start_node=pid, end_node=target_uid, kind="TargetsUser")
         )
 
+    # ── FACILITY profiles: Resource nodes + HasPermission edges ───────────────
+    for fp in facility_profiles:
+        pid = f"FACILITY:{fp['profile']}"
+        p = Properties()
+        p.set_property("name",     fp["profile"])
+        p.set_property("objectid", pid)
+        p.set_property("class",    "FACILITY")
+        if fp["owner"]:
+            p.set_property("owner", fp["owner"])
+        if fp["uacc"]:
+            p.set_property("uacc",  fp["uacc"])
+        graph.add_node_without_validation(
+            Node(id=pid, kinds=["Resource", "Base"], properties=p)
+        )
+        for entry in fp["acl"]:
+            _ensure_user(graph, entry["user"])
+            ep = Properties()
+            ep.set_property("access", entry["access"])
+            graph.add_edge_without_validation(
+                Edge(start_node=entry["user"], end_node=pid, kind="HasPermission", properties=ep)
+            )
+
+    # ── TCICSTRN profiles: Resource nodes + HasPermission edges ──────────────
+    for tp in tcicstrn_profiles:
+        pid = f"TCICSTRN:{tp['profile']}"
+        p = Properties()
+        p.set_property("name",     tp["profile"])
+        p.set_property("objectid", pid)
+        p.set_property("class",    "TCICSTRN")
+        if tp["owner"]:
+            p.set_property("owner", tp["owner"])
+        if tp["uacc"]:
+            p.set_property("uacc",  tp["uacc"])
+        graph.add_node_without_validation(
+            Node(id=pid, kinds=["Resource", "Base"], properties=p)
+        )
+        for entry in tp["acl"]:
+            _ensure_user(graph, entry["user"])
+            ep = Properties()
+            ep.set_property("access", entry["access"])
+            graph.add_edge_without_validation(
+                Edge(start_node=entry["user"], end_node=pid, kind="HasPermission", properties=ep)
+            )
+
+    # ── GCICSTRN profiles: Resource nodes + HasPermission edges ──────────────
+    for gp in gcicstrn_profiles:
+        pid = f"GCICSTRN:{gp['profile']}"
+        p = Properties()
+        p.set_property("name",     gp["profile"])
+        p.set_property("objectid", pid)
+        p.set_property("class",    "GCICSTRN")
+        if gp["owner"]:
+            p.set_property("owner", gp["owner"])
+        if gp["uacc"]:
+            p.set_property("uacc",  gp["uacc"])
+        graph.add_node_without_validation(
+            Node(id=pid, kinds=["Resource", "Base"], properties=p)
+        )
+        for entry in gp["acl"]:
+            _ensure_user(graph, entry["user"])
+            ep = Properties()
+            ep.set_property("access", entry["access"])
+            graph.add_edge_without_validation(
+                Edge(start_node=entry["user"], end_node=pid, kind="HasPermission", properties=ep)
+            )
+
     # ── Dataset profiles: Dataset nodes + HasDatasetAccess edges ──────────────
     for dp in dataset_profiles:
         did = f"DATASET:{dp['profile']}"
@@ -526,9 +598,12 @@ def build_graph(groups, users, surrogat_profiles, unixpriv_profiles, dataset_pro
     all_user_ids = [nid for nid, node in graph.nodes.items() if "User" in node.kinds]
 
     for profiles, class_name, edge_kind in [
-        (surrogat_profiles, "SURROGAT", "HasPermission"),
-        (unixpriv_profiles, "UNIXPRIV", "HasPermission"),
-        (dataset_profiles,  "DATASET",  "HasDatasetAccess"),
+        (surrogat_profiles,  "SURROGAT",  "HasPermission"),
+        (unixpriv_profiles,  "UNIXPRIV",  "HasPermission"),
+        (facility_profiles,  "FACILITY",  "HasPermission"),
+        (tcicstrn_profiles,  "TCICSTRN",  "HasPermission"),
+        (gcicstrn_profiles,  "GCICSTRN",  "HasPermission"),
+        (dataset_profiles,   "DATASET",   "HasDatasetAccess"),
     ]:
         for profile in profiles:
             if not profile["uacc"] or profile["uacc"] == "NONE":
@@ -556,18 +631,24 @@ def read(path):
 
 
 def main():
-    groups            = parse_groups(read(GROUP_FILE))
-    users             = parse_users(read(USER_FILE))
-    surrogat_profiles = parse_rlist(read(SURROGAT_FILE), "SURROGAT")
-    unixpriv_profiles = parse_rlist(read(UNIXPRIV_FILE), "UNIXPRIV")
-    dataset_profiles  = parse_datasets(read(DATASET_FILE))
+    groups             = parse_groups(read(GROUP_FILE))
+    users              = parse_users(read(USER_FILE))
+    surrogat_profiles  = parse_rlist(read(SURROGAT_FILE), "SURROGAT")
+    unixpriv_profiles  = parse_rlist(read(UNIXPRIV_FILE), "UNIXPRIV")
+    facility_profiles  = parse_rlist(read(FACILITY_FILE), "FACILITY")
+    dataset_profiles   = parse_datasets(read(DATASET_FILE))
+    tcicstrn_profiles  = parse_rlist(read(TCICSTRN_FILE), "TCICSTRN")
+    gcicstrn_profiles  = parse_rlist(read(GCICSTRN_FILE), "GCICSTRN")
 
     print(f"Parsed: {len(groups)} groups, {len(users)} users, "
           f"{len(surrogat_profiles)} surrogat profiles, "
           f"{len(unixpriv_profiles)} unixpriv profiles, "
-          f"{len(dataset_profiles)} dataset profiles.")
+          f"{len(facility_profiles)} facility profiles, "
+          f"{len(dataset_profiles)} dataset profiles, "
+          f"{len(tcicstrn_profiles)} tcicstrn profiles, "
+          f"{len(gcicstrn_profiles)} gcicstrn profiles.")
 
-    graph = build_graph(groups, users, surrogat_profiles, unixpriv_profiles, dataset_profiles)
+    graph = build_graph(groups, users, surrogat_profiles, unixpriv_profiles, facility_profiles, dataset_profiles, tcicstrn_profiles, gcicstrn_profiles)
     print(f"Graph:  {graph.get_node_count()} nodes, {graph.get_edge_count()} edges.")
 
     graph.export_to_file(OUTPUT_FILE, indent=2)

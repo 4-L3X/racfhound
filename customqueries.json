@@ -213,6 +213,162 @@
           "query": "MATCH (u:User {name: $result})-[r:HasPermission]->(res:Resource)-[t:TargetsUser]->(target:User) RETURN u, r, res, t, target"
         }
       ]
+    },
+    {
+      "name": "RACF - All FACILITY Relationships",
+      "queryList": [
+        {
+          "final": true,
+          "query": "MATCH (u)-[r:HasPermission]->(res:Resource {class: 'FACILITY'}) RETURN u, r, res"
+        }
+      ]
+    },
+    {
+      "name": "RACF - Users with BPX.SUPERUSER Access",
+      "queryList": [
+        {
+          "final": true,
+          "query": "MATCH (u:User)-[r:HasPermission]->(res:Resource {class: 'FACILITY'}) WHERE res.name = 'BPX.SUPERUSER' RETURN u, r, res"
+        }
+      ]
+    },
+    {
+      "name": "RACF - Users with Sensitive FACILITY Access",
+      "queryList": [
+        {
+          "final": true,
+          "query": "MATCH (u:User)-[r:HasPermission]->(res:Resource {class: 'FACILITY'}) WHERE res.name IN ['BPX.SUPERUSER', 'BPX.DAEMON', 'IRR.PASSWORD.RESET', 'IRR.LISTUSER', 'RACF.SETROPTS.STATISTICS'] OR res.name STARTS WITH 'IRR.RADMIN' OR res.name STARTS WITH 'STGADMIN' OR res.name STARTS WITH 'MVSADMIN' RETURN u, r, res ORDER BY res.name"
+        }
+      ]
+    },
+    {
+      "name": "RACF - FACILITY Profiles with Public UACC (Not NONE)",
+      "queryList": [
+        {
+          "final": true,
+          "query": "MATCH (res:Resource {class: 'FACILITY'}) WHERE res.uacc <> 'NONE' RETURN res ORDER BY res.uacc"
+        }
+      ]
+    },
+    {
+      "name": "RACF - All FACILITY Access for a Specific User",
+      "queryList": [
+        {
+          "final": false,
+          "title": "Select a User",
+          "query": "MATCH (u:User) RETURN u.name ORDER BY u.name"
+        },
+        {
+          "final": true,
+          "query": "MATCH (u:User {name: $result})-[r:HasPermission]->(res:Resource {class: 'FACILITY'}) RETURN u, r, res"
+        }
+      ]
+    },
+    {
+      "name": "RACF - All Users with Access to a Specific FACILITY Profile",
+      "queryList": [
+        {
+          "final": false,
+          "title": "Select a FACILITY Profile",
+          "query": "MATCH (res:Resource {class: 'FACILITY'}) RETURN res.name ORDER BY res.name"
+        },
+        {
+          "final": true,
+          "query": "MATCH (u:User)-[r:HasPermission]->(res:Resource {class: 'FACILITY', name: $result}) RETURN u, r, res"
+        }
+      ]
+    },
+    {
+      "name": "RACF - All TCICSTRN Relationships",
+      "queryList": [
+        {
+          "final": true,
+          "query": "MATCH (u)-[r:HasPermission]->(res:Resource {class: 'TCICSTRN'}) RETURN u, r, res"
+        }
+      ]
+    },
+    {
+      "name": "RACF - TCICSTRN Profiles with Public UACC (Not NONE)",
+      "queryList": [
+        {
+          "final": true,
+          "query": "MATCH (res:Resource {class: 'TCICSTRN'}) WHERE res.uacc <> 'NONE' RETURN res ORDER BY res.uacc"
+        }
+      ]
+    },
+    {
+      "name": "RACF - All TCICSTRN Access for a Specific User",
+      "queryList": [
+        {
+          "final": false,
+          "title": "Select a User",
+          "query": "MATCH (u:User) RETURN u.name ORDER BY u.name"
+        },
+        {
+          "final": true,
+          "query": "MATCH (u:User {name: $result})-[r:HasPermission]->(res:Resource {class: 'TCICSTRN'}) RETURN u, r, res"
+        }
+      ]
+    },
+    {
+      "name": "RACF - All Users with Access to a Specific TCICSTRN Profile",
+      "queryList": [
+        {
+          "final": false,
+          "title": "Select a TCICSTRN Profile",
+          "query": "MATCH (res:Resource {class: 'TCICSTRN'}) RETURN res.name ORDER BY res.name"
+        },
+        {
+          "final": true,
+          "query": "MATCH (u:User)-[r:HasPermission]->(res:Resource {class: 'TCICSTRN', name: $result}) RETURN u, r, res"
+        }
+      ]
+    },
+    {
+      "name": "RACF - All GCICSTRN Relationships",
+      "queryList": [
+        {
+          "final": true,
+          "query": "MATCH (u)-[r:HasPermission]->(res:Resource {class: 'GCICSTRN'}) RETURN u, r, res"
+        }
+      ]
+    },
+    {
+      "name": "RACF - GCICSTRN Profiles with Public UACC (Not NONE)",
+      "queryList": [
+        {
+          "final": true,
+          "query": "MATCH (res:Resource {class: 'GCICSTRN'}) WHERE res.uacc <> 'NONE' RETURN res ORDER BY res.uacc"
+        }
+      ]
+    },
+    {
+      "name": "RACF - All GCICSTRN Access for a Specific User",
+      "queryList": [
+        {
+          "final": false,
+          "title": "Select a User",
+          "query": "MATCH (u:User) RETURN u.name ORDER BY u.name"
+        },
+        {
+          "final": true,
+          "query": "MATCH (u:User {name: $result})-[r:HasPermission]->(res:Resource {class: 'GCICSTRN'}) RETURN u, r, res"
+        }
+      ]
+    },
+    {
+      "name": "RACF - All Users with Access to a Specific GCICSTRN Profile",
+      "queryList": [
+        {
+          "final": false,
+          "title": "Select a GCICSTRN Profile",
+          "query": "MATCH (res:Resource {class: 'GCICSTRN'}) RETURN res.name ORDER BY res.name"
+        },
+        {
+          "final": true,
+          "query": "MATCH (u:User)-[r:HasPermission]->(res:Resource {class: 'GCICSTRN', name: $result}) RETURN u, r, res"
+        }
+      ]
     }
   ]
 }
