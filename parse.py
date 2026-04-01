@@ -241,14 +241,15 @@ def parse_users(text):
 
 def parse_rlist(text, class_name):
     """
-    Parse RLIST output for SURROGAT or UNIXPRIV.
+    Parse RLIST output for SURROGAT, UNIXPRIV, FACILITY, or TCICSTRN.
     Returns list of dicts:
-        { profile, owner, uacc, acl[] }
+        { profile, owner, uacc, warning, auditing, installation_data, acl[] }
     where acl[i] = { user, access }
     """
     profiles = []
     current = None
     in_acl = False
+    awaiting_value = None  # 'auditing' or 'installation_data'
 
     for raw_line in text.splitlines():
         line = raw_line.rstrip()
@@ -258,28 +259,56 @@ def parse_rlist(text, class_name):
         if m:
             if current:
                 profiles.append(current)
-            current = {"profile": m.group(1), "owner": None, "uacc": None, "acl": []}
+            current = {
+                "profile": m.group(1), "owner": None, "uacc": None,
+                "warning": None, "auditing": None, "installation_data": None,
+                "acl": [],
+            }
             in_acl = False
+            awaiting_value = None
             continue
 
         if current is None:
             continue
 
-        # Owner + UACC line
+        # Owner + UACC + WARNING line
         m = re.match(
             r'\s*(\d+)\s+(\S+)\s+(NONE|READ|UPDATE|CONTROL|ALTER)\s+'
             r'(NONE|READ|UPDATE|CONTROL|ALTER)\s+(YES|NO)',
             line
         )
         if m:
-            current["owner"] = m.group(2)
-            current["uacc"]  = m.group(3)
+            current["owner"]   = m.group(2)
+            current["uacc"]    = m.group(3)
+            current["warning"] = m.group(5) == "YES"
             in_acl = False
+            awaiting_value = None
+            continue
+
+        # Section headers we track
+        if re.match(r'^INSTALLATION DATA', line):
+            awaiting_value = "installation_data"
+            in_acl = False
+            continue
+        if re.match(r'^AUDITING\s*$', line.strip()):
+            awaiting_value = "auditing"
+            in_acl = False
+            continue
+
+        # Separator line after a section header
+        if awaiting_value and re.match(r'^-+\s*$', line.strip()):
+            continue
+
+        # Value line: first non-blank, non-separator content after a tracked header
+        if awaiting_value and line.strip() and not re.match(r'^-+\s*$', line.strip()):
+            current[awaiting_value] = line.strip()
+            awaiting_value = None
             continue
 
         # ACL section header
         if re.match(r'^USER\s+ACCESS\s+ACCESS COUNT', line):
             in_acl = True
+            awaiting_value = None
             continue
 
         # ACL entries
@@ -289,6 +318,136 @@ def parse_rlist(text, class_name):
                 current["acl"].append({"user": m.group(1), "access": m.group(2)})
                 continue
             # Blank line or other section ends the ACL
+            if not line.strip() or re.match(r'^\s+ID\s+ACCESS', line):
+                in_acl = False
+
+    if current:
+        profiles.append(current)
+
+    return profiles
+
+
+def parse_gcicstrn(text):
+    """
+    Parse RLIST output for the GCICSTRN (CICS resource group) class.
+    Returns list of dicts:
+        { profile, member_class, members[], owner, uacc, warning,
+          auditing, installation_data, acl[] }
+    where members[] are the TCICSTRN profile names listed under
+    'RESOURCES IN GROUP', and acl[i] = { user, access }.
+    """
+    profiles = []
+    current = None
+    in_members = False
+    in_acl = False
+    awaiting_value = None  # 'auditing' or 'installation_data'
+
+    for raw_line in text.splitlines():
+        line = raw_line.rstrip()
+
+        # New profile record: "GCICSTRN   <name>"
+        m = re.match(r'^GCICSTRN\s+(\S+)', line)
+        if m:
+            if current:
+                profiles.append(current)
+            current = {
+                "profile":           m.group(1),
+                "member_class":      None,
+                "members":           [],
+                "owner":             None,
+                "uacc":              None,
+                "warning":           None,
+                "auditing":          None,
+                "installation_data": None,
+                "acl":               [],
+            }
+            in_members = False
+            in_acl = False
+            awaiting_value = None
+            continue
+
+        if current is None:
+            continue
+
+        # Member class line: "MEMBER CLASS NAME" header followed by the class name
+        if re.match(r'^MEMBER CLASS NAME', line):
+            in_members = False
+            in_acl = False
+            awaiting_value = None
+            continue
+
+        # Capture the member class (e.g. "TCICSTRN") — appears right after the header
+        if current["member_class"] is None and re.match(r'^(TCICSTRN)\s*$', line.strip()):
+            current["member_class"] = line.strip()
+            continue
+
+        # Resources-in-group section header
+        if re.match(r'^RESOURCES IN GROUP', line):
+            in_members = True
+            in_acl = False
+            awaiting_value = None
+            continue
+
+        # Collect member transaction names (one per line, not a separator/header)
+        if in_members:
+            stripped = line.strip()
+            if not stripped or re.match(r'^[-=\s]+$', line):
+                continue
+            # Any known section header ends the members block
+            if re.match(r'^(LEVEL|INSTALLATION DATA|APPLICATION DATA|SECLEVEL|CATEGORIES|'
+                        r'SECLABEL|AUDITING|GLOBALAUDIT|NOTIFY|CREATION DATE|ALTER COUNT|'
+                        r'USER\s+ACCESS)', stripped):
+                in_members = False
+            else:
+                current["members"].append(stripped)
+                continue
+
+        # Section headers we track for values
+        if re.match(r'^INSTALLATION DATA', line):
+            awaiting_value = "installation_data"
+            in_acl = False
+            continue
+        if re.match(r'^AUDITING\s*$', line.strip()):
+            awaiting_value = "auditing"
+            in_acl = False
+            continue
+
+        # Separator line after a section header
+        if awaiting_value and re.match(r'^-+\s*$', line.strip()):
+            continue
+
+        # Value line: first non-blank, non-separator content after a tracked header
+        if awaiting_value and line.strip() and not re.match(r'^-+\s*$', line.strip()):
+            current[awaiting_value] = line.strip()
+            awaiting_value = None
+            continue
+
+        # Owner + UACC + WARNING line: " 00    OWNER    NONE    NONE    NO"
+        m = re.match(
+            r'^\s*\d+\s+(\S+)\s+(NONE|READ|UPDATE|CONTROL|ALTER)\s+'
+            r'(NONE|READ|UPDATE|CONTROL|ALTER)\s+(YES|NO)',
+            line
+        )
+        if m:
+            current["owner"]   = m.group(1)
+            current["uacc"]    = m.group(2)
+            current["warning"] = m.group(4) == "YES"
+            in_acl = False
+            awaiting_value = None
+            continue
+
+        # ACL section header
+        if re.match(r'^USER\s+ACCESS\s+ACCESS COUNT', line):
+            in_acl = True
+            awaiting_value = None
+            continue
+
+        # ACL entries
+        if in_acl:
+            m = re.match(r'^(\S+)\s+(NONE|READ|UPDATE|CONTROL|ALTER)\s+(\d+)', line)
+            if m:
+                current["acl"].append({"user": m.group(1), "access": m.group(2)})
+                continue
             if not line.strip() or re.match(r'^\s+ID\s+ACCESS', line):
                 in_acl = False
 
@@ -320,12 +479,13 @@ def parse_datasets(text):
     """
     Parse LISTDSD (ld da) output.
     Returns list of dicts:
-        { profile, owner, uacc, acl[] }
+        { profile, owner, uacc, warning, auditing, installation_data, acl[] }
     where acl[i] = { user, access }
     """
     profiles = []
     current = None
     in_acl = False
+    awaiting_value = None  # 'auditing' or 'installation_data'
 
     for raw_line in text.splitlines():
         line = raw_line.rstrip()
@@ -335,29 +495,57 @@ def parse_datasets(text):
         if m:
             if current:
                 profiles.append(current)
-            current = {"profile": m.group(1), "owner": None, "uacc": None, "acl": []}
+            current = {
+                "profile": m.group(1), "owner": None, "uacc": None,
+                "warning": None, "auditing": None, "installation_data": None,
+                "acl": [],
+            }
             in_acl = False
+            awaiting_value = None
             continue
 
         if current is None:
             continue
 
-        # Level / owner / uacc line: " 00    IBMUSER    NONE    NO    NO"
-        # Header:                     LEVEL  OWNER      UNIVERSAL ACCESS  WARNING  ERASE
+        # Level / owner / uacc / warning line: " 00    IBMUSER    NONE    NO    NO"
+        # Columns: LEVEL  OWNER  UNIVERSAL ACCESS  WARNING  ERASE
         m = re.match(
             r'^\s*\d+\s+(\S+)\s+(NONE|READ|UPDATE|CONTROL|ALTER)\s+(YES|NO)',
             line
         )
         if m:
-            current["owner"] = m.group(1)
-            current["uacc"]  = m.group(2)
+            current["owner"]   = m.group(1)
+            current["uacc"]    = m.group(2)
+            current["warning"] = m.group(3) == "YES"
             in_acl = False
+            awaiting_value = None
+            continue
+
+        # Section headers we track for values
+        if re.match(r'^INSTALLATION DATA', line):
+            awaiting_value = "installation_data"
+            in_acl = False
+            continue
+        if re.match(r'^AUDITING\s*$', line.strip()):
+            awaiting_value = "auditing"
+            in_acl = False
+            continue
+
+        # Separator line after a section header
+        if awaiting_value and re.match(r'^-+\s*$', line.strip()):
+            continue
+
+        # Value line: first non-blank, non-separator content after a tracked header
+        if awaiting_value and line.strip() and not re.match(r'^-+\s*$', line.strip()):
+            current[awaiting_value] = line.strip()
+            awaiting_value = None
             continue
 
         # Standard ACL header — "   ID     ACCESS   ACCESS COUNT"
         # Exclude conditional access list header which appends "CLASS  ENTITY NAME"
         if re.match(r'^\s*ID\s+ACCESS\s+ACCESS COUNT\s*$', line):
             in_acl = True
+            awaiting_value = None
             continue
 
         if in_acl:
@@ -451,6 +639,12 @@ def build_graph(groups, users, surrogat_profiles, unixpriv_profiles, facility_pr
             p.set_property("owner",   sp["owner"])
         if sp["uacc"]:
             p.set_property("uacc",    sp["uacc"])
+        if sp["warning"] is not None:
+            p.set_property("warning", sp["warning"])
+        if sp["auditing"]:
+            p.set_property("auditing", sp["auditing"])
+        if sp["installation_data"]:
+            p.set_property("installation_data", sp["installation_data"])
         graph.add_node_without_validation(
             Node(id=pid, kinds=["Resource", "Base"], properties=p)
         )
@@ -479,6 +673,12 @@ def build_graph(groups, users, surrogat_profiles, unixpriv_profiles, facility_pr
             p.set_property("owner", up["owner"])
         if up["uacc"]:
             p.set_property("uacc",  up["uacc"])
+        if up["warning"] is not None:
+            p.set_property("warning", up["warning"])
+        if up["auditing"]:
+            p.set_property("auditing", up["auditing"])
+        if up["installation_data"]:
+            p.set_property("installation_data", up["installation_data"])
         graph.add_node_without_validation(
             Node(id=pid, kinds=["Resource", "Base"], properties=p)
         )
@@ -507,6 +707,12 @@ def build_graph(groups, users, surrogat_profiles, unixpriv_profiles, facility_pr
             p.set_property("owner", fp["owner"])
         if fp["uacc"]:
             p.set_property("uacc",  fp["uacc"])
+        if fp["warning"] is not None:
+            p.set_property("warning", fp["warning"])
+        if fp["auditing"]:
+            p.set_property("auditing", fp["auditing"])
+        if fp["installation_data"]:
+            p.set_property("installation_data", fp["installation_data"])
         graph.add_node_without_validation(
             Node(id=pid, kinds=["Resource", "Base"], properties=p)
         )
@@ -529,6 +735,12 @@ def build_graph(groups, users, surrogat_profiles, unixpriv_profiles, facility_pr
             p.set_property("owner", tp["owner"])
         if tp["uacc"]:
             p.set_property("uacc",  tp["uacc"])
+        if tp["warning"] is not None:
+            p.set_property("warning", tp["warning"])
+        if tp["auditing"]:
+            p.set_property("auditing", tp["auditing"])
+        if tp["installation_data"]:
+            p.set_property("installation_data", tp["installation_data"])
         graph.add_node_without_validation(
             Node(id=pid, kinds=["Resource", "Base"], properties=p)
         )
@@ -540,7 +752,7 @@ def build_graph(groups, users, surrogat_profiles, unixpriv_profiles, facility_pr
                 Edge(start_node=entry["user"], end_node=pid, kind="HasPermission", properties=ep)
             )
 
-    # ── GCICSTRN profiles: Resource nodes + HasPermission edges ──────────────
+    # ── GCICSTRN profiles: Resource nodes + HasPermission + ContainsMember edges
     for gp in gcicstrn_profiles:
         pid = f"GCICSTRN:{gp['profile']}"
         p = Properties()
@@ -551,6 +763,14 @@ def build_graph(groups, users, surrogat_profiles, unixpriv_profiles, facility_pr
             p.set_property("owner", gp["owner"])
         if gp["uacc"]:
             p.set_property("uacc",  gp["uacc"])
+        if gp.get("member_class"):
+            p.set_property("member_class", gp["member_class"])
+        if gp["warning"] is not None:
+            p.set_property("warning", gp["warning"])
+        if gp["auditing"]:
+            p.set_property("auditing", gp["auditing"])
+        if gp["installation_data"]:
+            p.set_property("installation_data", gp["installation_data"])
         graph.add_node_without_validation(
             Node(id=pid, kinds=["Resource", "Base"], properties=p)
         )
@@ -560,6 +780,13 @@ def build_graph(groups, users, surrogat_profiles, unixpriv_profiles, facility_pr
             ep.set_property("access", entry["access"])
             graph.add_edge_without_validation(
                 Edge(start_node=entry["user"], end_node=pid, kind="HasPermission", properties=ep)
+            )
+        # Link the group to each member TCICSTRN profile it contains
+        member_class = gp.get("member_class") or "TCICSTRN"
+        for member_name in gp.get("members", []):
+            member_pid = f"{member_class}:{member_name}"
+            graph.add_edge_without_validation(
+                Edge(start_node=pid, end_node=member_pid, kind="ContainsMember")
             )
 
     # ── Dataset profiles: Dataset nodes + HasDatasetAccess edges ──────────────
@@ -573,6 +800,12 @@ def build_graph(groups, users, surrogat_profiles, unixpriv_profiles, facility_pr
             p.set_property("owner", dp["owner"])
         if dp["uacc"]:
             p.set_property("uacc",  dp["uacc"])
+        if dp["warning"] is not None:
+            p.set_property("warning", dp["warning"])
+        if dp["auditing"]:
+            p.set_property("auditing", dp["auditing"])
+        if dp["installation_data"]:
+            p.set_property("installation_data", dp["installation_data"])
         graph.add_node_without_validation(
             Node(id=did, kinds=["Dataset", "Base"], properties=p)
         )
@@ -638,7 +871,7 @@ def main():
     facility_profiles  = parse_rlist(read(FACILITY_FILE), "FACILITY")
     dataset_profiles   = parse_datasets(read(DATASET_FILE))
     tcicstrn_profiles  = parse_rlist(read(TCICSTRN_FILE), "TCICSTRN")
-    gcicstrn_profiles  = parse_rlist(read(GCICSTRN_FILE), "GCICSTRN")
+    gcicstrn_profiles  = parse_gcicstrn(read(GCICSTRN_FILE))
 
     print(f"Parsed: {len(groups)} groups, {len(users)} users, "
           f"{len(surrogat_profiles)} surrogat profiles, "

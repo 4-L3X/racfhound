@@ -1,6 +1,24 @@
 {
   "queries": [
     {
+      "name": "RACF - All Resources with No Auditing",
+      "queryList": [
+        {
+          "final": true,
+          "query": "MATCH (n) WHERE (n.auditing IS NULL OR n.auditing = 'NONE') AND (n:Resource OR n:Dataset) RETURN n ORDER BY n.class, n.name"
+        }
+      ]
+    },
+    {
+      "name": "RACF - All Resources in Warning Mode",
+      "queryList": [
+        {
+          "final": true,
+          "query": "MATCH (n) WHERE n.warning = true RETURN n ORDER BY n.class, n.name"
+        }
+      ]
+    },
+    {
       "name": "RACF - All SURROGAT Relationships",
       "queryList": [
         {
@@ -321,6 +339,24 @@
         {
           "final": true,
           "query": "MATCH (u:User)-[r:HasPermission]->(res:Resource {class: 'TCICSTRN', name: $result}) RETURN u, r, res"
+        }
+      ]
+    },
+    {
+      "name": "RACF - GCICSTRN Group Members (CICS Transaction Groups)",
+      "queryList": [
+        {
+          "final": true,
+          "query": "MATCH (g:Resource {class: 'GCICSTRN'})-[r:ContainsMember]->(t:Resource {class: 'TCICSTRN'}) RETURN g, r, t"
+        }
+      ]
+    },
+    {
+      "name": "RACF - Users with Access to a GCICSTRN Group (and its member transactions)",
+      "queryList": [
+        {
+          "final": true,
+          "query": "MATCH (u:User)-[p:HasPermission]->(g:Resource {class: 'GCICSTRN'})-[c:ContainsMember]->(t:Resource {class: 'TCICSTRN'}) RETURN u, p, g, c, t"
         }
       ]
     },
