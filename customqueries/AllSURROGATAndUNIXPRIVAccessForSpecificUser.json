@@ -1,14 +1,4 @@
 {
       "name": "RACF - All SURROGAT and UNIXPRIV Access for a Specific User",
-      "queryList": [
-        {
-          "final": false,
-          "title": "Select a User",
-          "query": "MATCH (u:User) RETURN u.name ORDER BY u.name"
-        },
-        {
-          "final": true,
-          "query": "MATCH (u:User {name: $result})-[r:HasPermission]->(res:Resource)-[t:TargetsUser]->(target:User) RETURN u, r, res, t, target"
-        }
-      ]
+      "query": "MATCH (u:User {name: 'IBMUSER'})-[r:HasPermission]->(res:Resource)-[t:TargetsUser]->(target:User) RETURN u, r, res, t, target"
 }

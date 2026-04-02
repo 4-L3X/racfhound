@@ -1,9 +1,4 @@
 {
-      "name": "RACF - Users with BPX.SUPERUSER Access",
-      "queryList": [
-        {
-          "final": true,
-          "query": "MATCH (u:User)-[r:HasPermission]->(res:Resource {class: 'FACILITY'}) WHERE res.name = 'BPX.SUPERUSER' RETURN u, r, res"
-        }
-      ]
+    "name": "RACF - Users with BPX.SUPERUSER Access",
+    "query": "MATCH (u:User)-[r:HasPermission]->(res:Resource {class: 'FACILITY'}) WHERE res.name = 'BPX.SUPERUSER' RETURN u, r, res"
 }

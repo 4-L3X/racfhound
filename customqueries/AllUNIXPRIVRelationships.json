@@ -1,9 +1,4 @@
 {
-      "name": "RACF - All UNIXPRIV Relationships",
-      "queryList": [
-        {
-          "final": true,
-          "query": "MATCH (u)-[r:HasPermission]->(res:Resource)-[t:TargetsUser]->(target:User) WHERE res.class = 'UNIXPRIV' RETURN u, r, res, t, target"
-        }
-      ]
+    "name": "RACF - All UNIXPRIV Relationships",
+    "query": "MATCH (u)-[r:HasPermission]->(res:Resource)-[t:TargetsUser]->(target:User) WHERE res.class = 'UNIXPRIV' RETURN u, r, res, t, target"
 }

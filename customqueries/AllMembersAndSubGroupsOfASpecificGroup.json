@@ -1,14 +1,4 @@
 {
       "name": "RACF - All Members and Subgroups of a Specific Group",
-      "queryList": [
-        {
-          "final": false,
-          "title": "Select a Group",
-          "query": "MATCH (g:Group) RETURN g.name ORDER BY g.name"
-        },
-        {
-          "final": true,
-          "query": "MATCH (n)-[r:MemberOf|SubGroupOf]->(g:Group {name: $result}) RETURN n, r, g"
-        }
-      ]
+      "query": "MATCH (n)-[r:MemberOf|SubGroupOf]->(g:Group {name: 'GROUPNAME'}) RETURN n, r, g"
 }

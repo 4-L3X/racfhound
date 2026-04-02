@@ -1,14 +1,4 @@
 {
       "name": "RACF - All Users with Access to a Specific Dataset",
-      "queryList": [
-        {
-          "final": false,
-          "title": "Select a Dataset",
-          "query": "MATCH (d:Dataset) RETURN d.name ORDER BY d.name"
-        },
-        {
-          "final": true,
-          "query": "MATCH (u)-[r:HasDatasetAccess]->(d:Dataset {name: $result}) RETURN u, r, d"
-        }
-      ]
+      "query": "MATCH (u)-[r:HasDatasetAccess]->(d:Dataset {name: 'DATA.SET'}) RETURN u, r, d"
 }

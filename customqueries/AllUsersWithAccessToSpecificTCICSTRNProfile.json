@@ -1,14 +1,4 @@
 {
       "name": "RACF - All Users with Access to a Specific TCICSTRN Profile",
-      "queryList": [
-        {
-          "final": false,
-          "title": "Select a TCICSTRN Profile",
-          "query": "MATCH (res:Resource {class: 'TCICSTRN'}) RETURN res.name ORDER BY res.name"
-        },
-        {
-          "final": true,
-          "query": "MATCH (u:User)-[r:HasPermission]->(res:Resource {class: 'TCICSTRN', name: $result}) RETURN u, r, res"
-        }
-      ]
+      "query": "MATCH (u:User)-[r:HasPermission]->(res:Resource {class: 'TCICSTRN', name: 'TCICSTRNNAME'}) RETURN u, r, res"
 }

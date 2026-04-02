@@ -1,9 +1,4 @@
 {
-      "name": "RACF - All Group Relationships (Members + Subgroups)",
-      "queryList": [
-        {
-          "final": true,
-          "query": "MATCH (n)-[r:MemberOf|SubGroupOf]->(g:Group) RETURN n, r, g"
-        }
-      ]
+    "name": "RACF - All Group Relationships (Members + Subgroups)",
+    "query": "MATCH (n)-[r:MemberOf|SubGroupOf]->(g:Group) RETURN n, r, g"
 }

@@ -1,9 +1,4 @@
 {
-      "name": "RACF - Revoked Users",
-      "queryList": [
-        {
-          "final": true,
-          "query": "MATCH (u:User) WHERE u.revoked = true RETURN u"
-        }
-      ]
+    "name": "RACF - Revoked Users",
+    "query": "MATCH (u:User) WHERE u.revoked = true RETURN u"
 }

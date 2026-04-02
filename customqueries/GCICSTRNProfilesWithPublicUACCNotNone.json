@@ -1,9 +1,4 @@
 {
-      "name": "RACF - GCICSTRN Profiles with Public UACC (Not NONE)",
-      "queryList": [
-        {
-          "final": true,
-          "query": "MATCH (res:Resource {class: 'GCICSTRN'}) WHERE res.uacc <> 'NONE' RETURN res ORDER BY res.uacc"
-        }
-      ]
+    "name": "RACF - GCICSTRN Profiles with Public UACC (Not NONE)",
+    "query": "MATCH (res:Resource {class: 'GCICSTRN'}) WHERE res.uacc <> 'NONE' RETURN res ORDER BY res.uacc"
 }

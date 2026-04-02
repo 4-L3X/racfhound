@@ -1,9 +1,4 @@
 {
-      "name": "RACF - Users with Sensitive FACILITY Access",
-      "queryList": [
-        {
-          "final": true,
-          "query": "MATCH (u:User)-[r:HasPermission]->(res:Resource {class: 'FACILITY'}) WHERE res.name IN ['BPX.SUPERUSER', 'BPX.DAEMON', 'IRR.PASSWORD.RESET', 'IRR.LISTUSER', 'RACF.SETROPTS.STATISTICS'] OR res.name STARTS WITH 'IRR.RADMIN' OR res.name STARTS WITH 'STGADMIN' OR res.name STARTS WITH 'MVSADMIN' RETURN u, r, res ORDER BY res.name"
-        }
-      ]
+    "name": "RACF - Users with Sensitive FACILITY Access",
+    "query": "MATCH (u:User)-[r:HasPermission]->(res:Resource {class: 'FACILITY'}) WHERE res.name IN ['BPX.SUPERUSER', 'BPX.DAEMON', 'IRR.PASSWORD.RESET', 'IRR.LISTUSER', 'RACF.SETROPTS.STATISTICS'] OR res.name STARTS WITH 'IRR.RADMIN' OR res.name STARTS WITH 'STGADMIN' OR res.name STARTS WITH 'MVSADMIN' RETURN u, r, res ORDER BY res.name"
 }
