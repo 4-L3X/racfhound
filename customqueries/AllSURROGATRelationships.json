@@ -1,0 +1,9 @@
+{
+      "name": "RACF - All SURROGAT Relationships",
+      "queryList": [
+        {
+          "final": true,
+          "query": "MATCH (u)-[r:HasPermission]->(res:Resource)-[t:TargetsUser]->(target:User) WHERE res.class = 'SURROGAT' RETURN u, r, res, t, target"
+        }
+      ]
+}

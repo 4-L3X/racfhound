@@ -1,0 +1,9 @@
+{
+      "name": "RACF - All GCICSTRN Relationships",
+      "queryList": [
+        {
+          "final": true,
+          "query": "MATCH (u)-[r:HasPermission]->(res:Resource {class: 'GCICSTRN'}) RETURN u, r, res"
+        }
+      ]
+}

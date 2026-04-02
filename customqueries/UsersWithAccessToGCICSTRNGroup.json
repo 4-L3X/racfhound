@@ -1,0 +1,9 @@
+{
+      "name": "RACF - Users with Access to a GCICSTRN Group (and its member transactions)",
+      "queryList": [
+        {
+          "final": true,
+          "query": "MATCH (u:User)-[p:HasPermission]->(g:Resource {class: 'GCICSTRN'})-[c:ContainsMember]->(t:Resource {class: 'TCICSTRN'}) RETURN u, p, g, c, t"
+        }
+      ]
+}

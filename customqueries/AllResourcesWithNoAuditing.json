@@ -1,0 +1,9 @@
+{
+      "name": "RACF - All Resources with No Auditing",
+      "queryList": [
+        {
+          "final": true,
+          "query": "MATCH (n) WHERE (n.auditing IS NULL OR n.auditing = 'NONE') AND (n:Resource OR n:Dataset) RETURN n ORDER BY n.class, n.name"
+        }
+      ]
+}

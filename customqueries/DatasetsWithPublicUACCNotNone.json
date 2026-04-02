@@ -1,0 +1,9 @@
+{
+      "name": "RACF - Datasets with Public UACC (Not NONE)",
+      "queryList": [
+        {
+          "final": true,
+          "query": "MATCH (d:Dataset) WHERE d.uacc <> 'NONE' RETURN d ORDER BY d.uacc"
+        }
+      ]
+}

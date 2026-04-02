@@ -1,0 +1,14 @@
+{
+      "name": "RACF - All Users with Access to a Specific FACILITY Profile",
+      "queryList": [
+        {
+          "final": false,
+          "title": "Select a FACILITY Profile",
+          "query": "MATCH (res:Resource {class: 'FACILITY'}) RETURN res.name ORDER BY res.name"
+        },
+        {
+          "final": true,
+          "query": "MATCH (u:User)-[r:HasPermission]->(res:Resource {class: 'FACILITY', name: $result}) RETURN u, r, res"
+        }
+      ]
+}

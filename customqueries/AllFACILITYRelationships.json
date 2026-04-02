@@ -1,0 +1,9 @@
+{
+      "name": "RACF - All FACILITY Relationships",
+      "queryList": [
+        {
+          "final": true,
+          "query": "MATCH (u)-[r:HasPermission]->(res:Resource {class: 'FACILITY'}) RETURN u, r, res"
+        }
+      ]
+}

@@ -1,0 +1,9 @@
+{
+      "name": "RACF - TCICSTRN Profiles with Public UACC (Not NONE)",
+      "queryList": [
+        {
+          "final": true,
+          "query": "MATCH (res:Resource {class: 'TCICSTRN'}) WHERE res.uacc <> 'NONE' RETURN res ORDER BY res.uacc"
+        }
+      ]
+}

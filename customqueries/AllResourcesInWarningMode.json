@@ -1,0 +1,9 @@
+{
+      "name": "RACF - All Resources in Warning Mode",
+      "queryList": [
+        {
+          "final": true,
+          "query": "MATCH (n) WHERE n.warning = true RETURN n ORDER BY n.class, n.name"
+        }
+      ]
+}

@@ -1,0 +1,14 @@
+{
+      "name": "RACF - All Users with Access to a Specific GCICSTRN Profile",
+      "queryList": [
+        {
+          "final": false,
+          "title": "Select a GCICSTRN Profile",
+          "query": "MATCH (res:Resource {class: 'GCICSTRN'}) RETURN res.name ORDER BY res.name"
+        },
+        {
+          "final": true,
+          "query": "MATCH (u:User)-[r:HasPermission]->(res:Resource {class: 'GCICSTRN', name: $result}) RETURN u, r, res"
+        }
+      ]
+}

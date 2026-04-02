@@ -1,0 +1,9 @@
+{
+      "name": "RACF - Users with SPECIAL Attribute",
+      "queryList": [
+        {
+          "final": true,
+          "query": "MATCH (u:User) WHERE u.attributes CONTAINS 'SPECIAL' RETURN u"
+        }
+      ]
+}

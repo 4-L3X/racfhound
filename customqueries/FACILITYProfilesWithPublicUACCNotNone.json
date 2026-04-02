@@ -1,0 +1,9 @@
+{
+      "name": "RACF - FACILITY Profiles with Public UACC (Not NONE)",
+      "queryList": [
+        {
+          "final": true,
+          "query": "MATCH (res:Resource {class: 'FACILITY'}) WHERE res.uacc <> 'NONE' RETURN res ORDER BY res.uacc"
+        }
+      ]
+}

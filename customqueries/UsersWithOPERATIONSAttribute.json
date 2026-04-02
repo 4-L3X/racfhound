@@ -1,0 +1,9 @@
+{
+      "name": "RACF - Users with OPERATIONS Attribute",
+      "queryList": [
+        {
+          "final": true,
+          "query": "MATCH (u:User) WHERE u.attributes CONTAINS 'OPERATIONS' RETURN u"
+        }
+      ]
+}

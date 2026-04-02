@@ -1,0 +1,9 @@
+{
+      "name": "RACF - Users with No Group Membership",
+      "queryList": [
+        {
+          "final": true,
+          "query": "MATCH (u:User) WHERE NOT (u)-[:MemberOf]->(:Group) RETURN u"
+        }
+      ]
+}
