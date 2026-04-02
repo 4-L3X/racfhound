@@ -1,410 +1,344 @@
-{
-  "queries": [
+[
     {
       "name": "RACF - All Resources with No Auditing",
-      "queryList": [
-        {
-          "final": true,
-          "query": "MATCH (n) WHERE (n.auditing IS NULL OR n.auditing = 'NONE') AND (n:Resource OR n:Dataset) RETURN n ORDER BY n.class, n.name"
-        }
-      ]
+      "query": "MATCH (n) WHERE (n.auditing IS NULL OR n.auditing = 'NONE') AND (n:Resource OR n:Dataset) RETURN n ORDER BY n.class, n.name",
+      "prebuilt": false,
+      "platforms": [],
+      "category": "",
+      "description": null,
+      "guid": "z8b6ec67-21aa-4dd2-8906-47bb81bf5262"
     },
     {
       "name": "RACF - All Resources in Warning Mode",
-      "queryList": [
-        {
-          "final": true,
-          "query": "MATCH (n) WHERE n.warning = true RETURN n ORDER BY n.class, n.name"
-        }
-      ]
+      "query": "MATCH (n) WHERE n.warning = true RETURN n ORDER BY n.class, n.name",
+      "prebuilt": false,
+      "platforms": [],
+      "category": "",
+      "description": null,
+      "guid": "b9c7fd78-32bb-5ee3-9017-58cc92cg6373"
     },
     {
       "name": "RACF - All SURROGAT Relationships",
-      "queryList": [
-        {
-          "final": true,
-          "query": "MATCH (u)-[r:HasPermission]->(res:Resource)-[t:TargetsUser]->(target:User) WHERE res.class = 'SURROGAT' RETURN u, r, res, t, target"
-        }
-      ]
+      "query": "MATCH (u)-[r:HasPermission]->(res:Resource)-[t:TargetsUser]->(target:User) WHERE res.class = 'SURROGAT' RETURN u, r, res, t, target",
+      "prebuilt": false,
+      "platforms": [],
+      "category": "",
+      "description": null,
+      "guid": "c0d8ge89-43cc-6ff4-0128-69dd03dh7484"
     },
     {
       "name": "RACF - All UNIXPRIV Relationships",
-      "queryList": [
-        {
-          "final": true,
-          "query": "MATCH (u)-[r:HasPermission]->(res:Resource)-[t:TargetsUser]->(target:User) WHERE res.class = 'UNIXPRIV' RETURN u, r, res, t, target"
-        }
-      ]
+      "query": "MATCH (u)-[r:HasPermission]->(res:Resource)-[t:TargetsUser]->(target:User) WHERE res.class = 'UNIXPRIV' RETURN u, r, res, t, target",
+      "prebuilt": false,
+      "platforms": [],
+      "category": "",
+      "description": null,
+      "guid": "d1e9hf90-54dd-7gg5-1239-70ee14ei8595"
     },
     {
       "name": "RACF - All Group Memberships (Users)",
-      "queryList": [
-        {
-          "final": true,
-          "query": "MATCH (u:User)-[r:MemberOf]->(g:Group) RETURN u, r, g"
-        }
-      ]
+      "query": "MATCH (u:User)-[r:MemberOf]->(g:Group) RETURN u, r, g",
+      "prebuilt": false,
+      "platforms": [],
+      "category": "",
+      "description": null,
+      "guid": "e2f0ig01-65ee-8hh6-2340-81ff25fj9606"
     },
     {
       "name": "RACF - Full Group Hierarchy (SubGroupOf)",
-      "queryList": [
-        {
-          "final": true,
-          "query": "MATCH (sg:Group)-[r:SubGroupOf]->(pg:Group) RETURN sg, r, pg"
-        }
-      ]
+      "query": "MATCH (sg:Group)-[r:SubGroupOf]->(pg:Group) RETURN sg, r, pg",
+      "prebuilt": false,
+      "platforms": [],
+      "category": "",
+      "description": null,
+      "guid": "f3g1jh12-76ff-9ii7-3451-92gg36gk0717"
     },
     {
       "name": "RACF - All Group Relationships (Members + Subgroups)",
-      "queryList": [
-        {
-          "final": true,
-          "query": "MATCH (n)-[r:MemberOf|SubGroupOf]->(g:Group) RETURN n, r, g"
-        }
-      ]
+      "query": "MATCH (n)-[r:MemberOf|SubGroupOf]->(g:Group) RETURN n, r, g",
+      "prebuilt": false,
+      "platforms": [],
+      "category": "",
+      "description": null,
+      "guid": "g4h2ki23-87gg-0jj8-4562-03hh47hl1828"
     },
     {
       "name": "RACF - SURROGAT Chain (User -> Profile -> Target User)",
-      "queryList": [
-        {
-          "final": true,
-          "query": "MATCH (u:User)-[r:HasPermission]->(res:Resource)-[t:TargetsUser]->(target:User) WHERE res.class = 'SURROGAT' RETURN u, r, res, t, target"
-        }
-      ]
+      "query": "MATCH (u:User)-[r:HasPermission]->(res:Resource)-[t:TargetsUser]->(target:User) WHERE res.class = 'SURROGAT' RETURN u, r, res, t, target",
+      "prebuilt": false,
+      "platforms": [],
+      "category": "",
+      "description": null,
+      "guid": "i6j4mk45-09ii-2ll0-6784-25jj69jn3040"
     },
     {
       "name": "RACF - Users with SURROGAT Access to Privileged Users",
-      "queryList": [
-        {
-          "final": true,
-          "query": "MATCH (u:User)-[r:HasPermission]->(res:Resource)-[t:TargetsUser]->(target:User) WHERE res.class = 'SURROGAT' AND (res.name CONTAINS 'ADMIN' OR res.name CONTAINS 'SYS' OR res.name CONTAINS 'IBMUSER') RETURN u, r, res, t, target"
-        }
-      ]
+      "query": "MATCH (u:User)-[r:HasPermission]->(res:Resource)-[t:TargetsUser]->(target:User) WHERE res.class = 'SURROGAT' AND (res.name CONTAINS 'ADMIN' OR res.name CONTAINS 'SYS' OR res.name CONTAINS 'IBMUSER') RETURN u, r, res, t, target",
+      "prebuilt": false,
+      "platforms": [],
+      "category": "",
+      "description": null,
+      "guid": "j7k5nl56-10jj-3mm1-7895-36kk70ko4151"
     },
     {
       "name": "RACF - Revoked Users",
-      "queryList": [
-        {
-          "final": true,
-          "query": "MATCH (u:User) WHERE u.revoked = true RETURN u"
-        }
-      ]
+      "query": "MATCH (u:User) WHERE u.revoked = true RETURN u",
+      "prebuilt": false,
+      "platforms": [],
+      "category": "",
+      "description": null,
+      "guid": "k8l6om67-21kk-4nn2-8906-47ll81lp5262"
     },
     {
       "name": "RACF - Users with SPECIAL Attribute",
-      "queryList": [
-        {
-          "final": true,
-          "query": "MATCH (u:User) WHERE u.attributes CONTAINS 'SPECIAL' RETURN u"
-        }
-      ]
+      "query": "MATCH (u:User) WHERE u.attributes CONTAINS 'SPECIAL' RETURN u",
+      "prebuilt": false,
+      "platforms": [],
+      "category": "",
+      "description": null,
+      "guid": "l9m7pn78-32ll-5oo3-9017-58mm92mq6373"
     },
     {
       "name": "RACF - Users with OPERATIONS Attribute",
-      "queryList": [
-        {
-          "final": true,
-          "query": "MATCH (u:User) WHERE u.attributes CONTAINS 'OPERATIONS' RETURN u"
-        }
-      ]
+      "query": "MATCH (u:User) WHERE u.attributes CONTAINS 'OPERATIONS' RETURN u",
+      "prebuilt": false,
+      "platforms": [],
+      "category": "",
+      "description": null,
+      "guid": "m0n8qo89-43mm-6pp4-0128-69nn03nr7484"
     },
     {
       "name": "RACF - Users with AUDITOR Attribute",
-      "queryList": [
-        {
-          "final": true,
-          "query": "MATCH (u:User) WHERE u.attributes CONTAINS 'AUDITOR' RETURN u"
-        }
-      ]
-    },
-    {
-      "name": "RACF - All Highly Privileged Users (SPECIAL or OPERATIONS)",
-      "queryList": [
-        {
-          "final": true,
-          "query": "MATCH (u:User) WHERE u.attributes CONTAINS 'SPECIAL' OR u.attributes CONTAINS 'OPERATIONS' RETURN u"
-        }
-      ]
+      "query": "MATCH (u:User) WHERE u.attributes CONTAINS 'AUDITOR' RETURN u",
+      "prebuilt": false,
+      "platforms": [],
+      "category": "",
+      "description": null,
+      "guid": "o2p0sq01-65oo-8rr6-2340-81pp25pt9606"
     },
     {
       "name": "RACF - Users with No Group Membership",
-      "queryList": [
-        {
-          "final": true,
-          "query": "MATCH (u:User) WHERE NOT (u)-[:MemberOf]->(:Group) RETURN u"
-        }
-      ]
+      "query": "MATCH (u:User) WHERE NOT (u)-[:MemberOf]->(:Group) RETURN u",
+      "prebuilt": false,
+      "platforms": [],
+      "category": "",
+      "description": null,
+      "guid": "p3q1tr12-76pp-9ss7-3451-92qq36qu0717"
     },
     {
       "name": "RACF - All Relationships for a Specific User",
-      "queryList": [
-        {
-          "final": false,
-          "title": "Select a User",
-          "query": "MATCH (u:User) RETURN u.name ORDER BY u.name"
-        },
-        {
-          "final": true,
-          "query": "MATCH (u:User {name: $result})-[r]-(n) RETURN u, r, n"
-        }
-      ]
+      "query": "MATCH (u:User {name: 'IBMUSER'})-[r]-(n) RETURN u, r, n",
+      "prebuilt": false,
+      "platforms": [],
+      "category": "",
+      "description": null,
+      "guid": "q4r2us23-87qq-0tt8-4562-03rr47rv1828"
     },
     {
       "name": "RACF - All Members and Subgroups of a Specific Group",
-      "queryList": [
-        {
-          "final": false,
-          "title": "Select a Group",
-          "query": "MATCH (g:Group) RETURN g.name ORDER BY g.name"
-        },
-        {
-          "final": true,
-          "query": "MATCH (n)-[r:MemberOf|SubGroupOf]->(g:Group {name: $result}) RETURN n, r, g"
-        }
-      ]
+      "query": "MATCH (n)-[r:MemberOf|SubGroupOf]->(g:Group {name: 'GROUPNAME'}) RETURN n, r, g",
+      "prebuilt": false,
+      "platforms": [],
+      "category": "",
+      "description": null,
+      "guid": "r5s3vt34-98rr-1uu9-5673-14ss58sw2939"
     },
     {
       "name": "RACF - All DATASET Relationships",
-      "queryList": [
-        {
-          "final": true,
-          "query": "MATCH (u)-[r:HasDatasetAccess]->(d:Dataset) RETURN u, r, d"
-        }
-      ]
+      "query": "MATCH (u)-[r:HasDatasetAccess]->(d:Dataset) RETURN u, r, d",
+      "prebuilt": false,
+      "platforms": [],
+      "category": "",
+      "description": null,
+      "guid": "t7u5xv56-10tt-3wwb-7895-36uu70uy4151"
     },
     {
       "name": "RACF - Datasets with ALTER Access",
-      "queryList": [
-        {
-          "final": true,
-          "query": "MATCH (u)-[r:HasDatasetAccess]->(d:Dataset) WHERE r.access = 'ALTER' RETURN u, r, d"
-        }
-      ]
+      "query": "MATCH (u)-[r:HasDatasetAccess]->(d:Dataset) WHERE r.access = 'ALTER' RETURN u, r, d",
+      "prebuilt": false,
+      "platforms": [],
+      "category": "",
+      "description": null,
+      "guid": "u8v6yw67-21uu-4xxc-8906-47vv81vz5262"
     },
     {
       "name": "RACF - Datasets with Public UACC (Not NONE)",
-      "queryList": [
-        {
-          "final": true,
-          "query": "MATCH (d:Dataset) WHERE d.uacc <> 'NONE' RETURN d ORDER BY d.uacc"
-        }
-      ]
+      "query": "MATCH (d:Dataset) WHERE d.uacc <> 'NONE' RETURN d ORDER BY d.uacc",
+      "prebuilt": false,
+      "platforms": [],
+      "category": "",
+      "description": null,
+      "guid": "v9w7zx78-32vv-5yyd-9017-58ww92wa6373"
     },
     {
       "name": "RACF - All Dataset Access for a Specific User",
-      "queryList": [
-        {
-          "final": false,
-          "title": "Select a User",
-          "query": "MATCH (u:User) RETURN u.name ORDER BY u.name"
-        },
-        {
-          "final": true,
-          "query": "MATCH (u:User {name: $result})-[r:HasDatasetAccess]->(d:Dataset) RETURN u, r, d"
-        }
-      ]
+      "query": "MATCH (u:User {name: 'IBMUSER'})-[r:HasDatasetAccess]->(d:Dataset) RETURN u, r, d",
+      "prebuilt": false,
+      "platforms": [],
+      "category": "",
+      "description": null,
+      "guid": "w0x8ay89-43ww-6zze-0128-69xx03xb7484"
     },
     {
       "name": "RACF - All Users with Access to a Specific Dataset",
-      "queryList": [
-        {
-          "final": false,
-          "title": "Select a Dataset",
-          "query": "MATCH (d:Dataset) RETURN d.name ORDER BY d.name"
-        },
-        {
-          "final": true,
-          "query": "MATCH (u)-[r:HasDatasetAccess]->(d:Dataset {name: $result}) RETURN u, r, d"
-        }
-      ]
+      "query": "MATCH (u)-[r:HasDatasetAccess]->(d:Dataset {name: 'DATASETNAME'}) RETURN u, r, d",
+      "prebuilt": false,
+      "platforms": [],
+      "category": "",
+      "description": null,
+      "guid": "x1y9bz90-54xx-7aaf-1239-70yy14yc8595"
     },
     {
       "name": "RACF - All SURROGAT and UNIXPRIV Access for a Specific User",
-      "queryList": [
-        {
-          "final": false,
-          "title": "Select a User",
-          "query": "MATCH (u:User) RETURN u.name ORDER BY u.name"
-        },
-        {
-          "final": true,
-          "query": "MATCH (u:User {name: $result})-[r:HasPermission]->(res:Resource)-[t:TargetsUser]->(target:User) RETURN u, r, res, t, target"
-        }
-      ]
+      "query": "MATCH (u:User {name: 'IBMUSER'})-[r:HasPermission]->(res:Resource)-[t:TargetsUser]->(target:User) RETURN u, r, res, t, target",
+      "prebuilt": false,
+      "platforms": [],
+      "category": "",
+      "description": null,
+      "guid": "z3a1db12-76zz-9cch-3451-92aa36ae0717"
     },
     {
       "name": "RACF - All FACILITY Relationships",
-      "queryList": [
-        {
-          "final": true,
-          "query": "MATCH (u)-[r:HasPermission]->(res:Resource {class: 'FACILITY'}) RETURN u, r, res"
-        }
-      ]
+      "query": "MATCH (u)-[r:HasPermission]->(res:Resource {class: 'FACILITY'}) RETURN u, r, res",
+      "prebuilt": false,
+      "platforms": [],
+      "category": "",
+      "description": null,
+      "guid": "a4b2ec23-87aa-0ddi-4562-03bb47bf1828"
     },
     {
       "name": "RACF - Users with BPX.SUPERUSER Access",
-      "queryList": [
-        {
-          "final": true,
-          "query": "MATCH (u:User)-[r:HasPermission]->(res:Resource {class: 'FACILITY'}) WHERE res.name = 'BPX.SUPERUSER' RETURN u, r, res"
-        }
-      ]
+      "query": "MATCH (u:User)-[r:HasPermission]->(res:Resource {class: 'FACILITY'}) WHERE res.name = 'BPX.SUPERUSER' RETURN u, r, res",
+      "prebuilt": false,
+      "platforms": [],
+      "category": "",
+      "description": null,
+      "guid": "b5c3fd34-98bb-1eej-5673-14cc58cg2939"
     },
     {
       "name": "RACF - Users with Sensitive FACILITY Access",
-      "queryList": [
-        {
-          "final": true,
-          "query": "MATCH (u:User)-[r:HasPermission]->(res:Resource {class: 'FACILITY'}) WHERE res.name IN ['BPX.SUPERUSER', 'BPX.DAEMON', 'IRR.PASSWORD.RESET', 'IRR.LISTUSER', 'RACF.SETROPTS.STATISTICS'] OR res.name STARTS WITH 'IRR.RADMIN' OR res.name STARTS WITH 'STGADMIN' OR res.name STARTS WITH 'MVSADMIN' RETURN u, r, res ORDER BY res.name"
-        }
-      ]
+      "query": "MATCH (u:User)-[r:HasPermission]->(res:Resource {class: 'FACILITY'}) WHERE res.name IN ['BPX.SUPERUSER', 'BPX.DAEMON', 'IRR.PASSWORD.RESET', 'IRR.LISTUSER', 'RACF.SETROPTS.STATISTICS'] OR res.name STARTS WITH 'IRR.RADMIN' OR res.name STARTS WITH 'STGADMIN' OR res.name STARTS WITH 'MVSADMIN' RETURN u, r, res ORDER BY res.name",
+      "prebuilt": false,
+      "platforms": [],
+      "category": "",
+      "description": null,
+      "guid": "c6d4ge45-09cc-2ffk-6784-25dd69dh3040"
     },
     {
       "name": "RACF - FACILITY Profiles with Public UACC (Not NONE)",
-      "queryList": [
-        {
-          "final": true,
-          "query": "MATCH (res:Resource {class: 'FACILITY'}) WHERE res.uacc <> 'NONE' RETURN res ORDER BY res.uacc"
-        }
-      ]
+      "query": "MATCH (res:Resource {class: 'FACILITY'}) WHERE res.uacc <> 'NONE' RETURN res ORDER BY res.uacc",
+      "prebuilt": false,
+      "platforms": [],
+      "category": "",
+      "description": null,
+      "guid": "d7e5hf56-10dd-3ggl-7895-36ee70ei4151"
     },
     {
       "name": "RACF - All FACILITY Access for a Specific User",
-      "queryList": [
-        {
-          "final": false,
-          "title": "Select a User",
-          "query": "MATCH (u:User) RETURN u.name ORDER BY u.name"
-        },
-        {
-          "final": true,
-          "query": "MATCH (u:User {name: $result})-[r:HasPermission]->(res:Resource {class: 'FACILITY'}) RETURN u, r, res"
-        }
-      ]
+      "query": "MATCH (u:User {name: $result})-[r:HasPermission]->(res:Resource {class: 'FACILITY'}) RETURN u, r, res",
+      "prebuilt": false,
+      "platforms": [],
+      "category": "",
+      "description": null,
+      "guid": "e8f6ig67-21ee-4hhm-8906-47ff81fj5262"
     },
     {
       "name": "RACF - All Users with Access to a Specific FACILITY Profile",
-      "queryList": [
-        {
-          "final": false,
-          "title": "Select a FACILITY Profile",
-          "query": "MATCH (res:Resource {class: 'FACILITY'}) RETURN res.name ORDER BY res.name"
-        },
-        {
-          "final": true,
-          "query": "MATCH (u:User)-[r:HasPermission]->(res:Resource {class: 'FACILITY', name: $result}) RETURN u, r, res"
-        }
-      ]
+      "query": "MATCH (u:User)-[r:HasPermission]->(res:Resource {class: 'FACILITY', name: 'FACILITYNAME'}) RETURN u, r, res",
+      "prebuilt": false,
+      "platforms": [],
+      "category": "",
+      "description": null,
+      "guid": "f9g7jh78-32ff-5iin-9017-58gg92gk6373"
     },
     {
       "name": "RACF - All TCICSTRN Relationships",
-      "queryList": [
-        {
-          "final": true,
-          "query": "MATCH (u)-[r:HasPermission]->(res:Resource {class: 'TCICSTRN'}) RETURN u, r, res"
-        }
-      ]
+      "query": "MATCH (u)-[r:HasPermission]->(res:Resource {class: 'TCICSTRN'}) RETURN u, r, res",
+      "prebuilt": false,
+      "platforms": [],
+      "category": "",
+      "description": null,
+      "guid": "g0h8ki89-43gg-6jjo-0128-69hh03hl7484"
     },
     {
       "name": "RACF - TCICSTRN Profiles with Public UACC (Not NONE)",
-      "queryList": [
-        {
-          "final": true,
-          "query": "MATCH (res:Resource {class: 'TCICSTRN'}) WHERE res.uacc <> 'NONE' RETURN res ORDER BY res.uacc"
-        }
-      ]
+      "query": "MATCH (res:Resource {class: 'TCICSTRN'}) WHERE res.uacc <> 'NONE' RETURN res ORDER BY res.uacc",
+      "prebuilt": false,
+      "platforms": [],
+      "category": "",
+      "description": null,
+      "guid": "h1i9lj90-54hh-7kkp-1239-70ii14im8595"
     },
     {
       "name": "RACF - All TCICSTRN Access for a Specific User",
-      "queryList": [
-        {
-          "final": false,
-          "title": "Select a User",
-          "query": "MATCH (u:User) RETURN u.name ORDER BY u.name"
-        },
-        {
-          "final": true,
-          "query": "MATCH (u:User {name: $result})-[r:HasPermission]->(res:Resource {class: 'TCICSTRN'}) RETURN u, r, res"
-        }
-      ]
+      "query": "MATCH (u:User {name: 'IBMUSER'})-[r:HasPermission]->(res:Resource {class: 'TCICSTRN'}) RETURN u, r, res",
+      "prebuilt": false,
+      "platforms": [],
+      "category": "",
+      "description": null,
+      "guid": "i2j0mk01-65ii-8llq-2340-81jj25jn9606"
     },
     {
       "name": "RACF - All Users with Access to a Specific TCICSTRN Profile",
-      "queryList": [
-        {
-          "final": false,
-          "title": "Select a TCICSTRN Profile",
-          "query": "MATCH (res:Resource {class: 'TCICSTRN'}) RETURN res.name ORDER BY res.name"
-        },
-        {
-          "final": true,
-          "query": "MATCH (u:User)-[r:HasPermission]->(res:Resource {class: 'TCICSTRN', name: $result}) RETURN u, r, res"
-        }
-      ]
+      "query": "MATCH (u:User)-[r:HasPermission]->(res:Resource {class: 'TCICSTRN', name: 'TCICSTRNNAME'}) RETURN u, r, res",
+      "prebuilt": false,
+      "platforms": [],
+      "category": "",
+      "description": null,
+      "guid": "j3k1nl12-76jj-9mmr-3451-92kk36ko0717"
     },
     {
       "name": "RACF - GCICSTRN Group Members (CICS Transaction Groups)",
-      "queryList": [
-        {
-          "final": true,
-          "query": "MATCH (g:Resource {class: 'GCICSTRN'})-[r:ContainsMember]->(t:Resource {class: 'TCICSTRN'}) RETURN g, r, t"
-        }
-      ]
+      "query": "MATCH (g:Resource {class: 'GCICSTRN'})-[r:ContainsMember]->(t:Resource {class: 'TCICSTRN'}) RETURN g, r, t",
+      "prebuilt": false,
+      "platforms": [],
+      "category": "",
+      "description": null,
+      "guid": "k4l2om23-87kk-0nns-4562-03ll47lp1828"
     },
     {
       "name": "RACF - Users with Access to a GCICSTRN Group (and its member transactions)",
-      "queryList": [
-        {
-          "final": true,
-          "query": "MATCH (u:User)-[p:HasPermission]->(g:Resource {class: 'GCICSTRN'})-[c:ContainsMember]->(t:Resource {class: 'TCICSTRN'}) RETURN u, p, g, c, t"
-        }
-      ]
+      "query": "MATCH (u:User)-[p:HasPermission]->(g:Resource {class: 'GCICSTRN'})-[c:ContainsMember]->(t:Resource {class: 'TCICSTRN'}) RETURN u, p, g, c, t",
+      "prebuilt": false,
+      "platforms": [],
+      "category": "",
+      "description": null,
+      "guid": "l5m3pn34-98ll-1oot-5673-14mm58mq2939"
     },
     {
       "name": "RACF - All GCICSTRN Relationships",
-      "queryList": [
-        {
-          "final": true,
-          "query": "MATCH (u)-[r:HasPermission]->(res:Resource {class: 'GCICSTRN'}) RETURN u, r, res"
-        }
-      ]
+      "query": "MATCH (u)-[r:HasPermission]->(res:Resource {class: 'GCICSTRN'}) RETURN u, r, res",
+      "prebuilt": false,
+      "platforms": [],
+      "category": "",
+      "description": null,
+      "guid": "m6n4qo45-09mm-2ppu-6784-25nn69nr3040"
     },
     {
       "name": "RACF - GCICSTRN Profiles with Public UACC (Not NONE)",
-      "queryList": [
-        {
-          "final": true,
-          "query": "MATCH (res:Resource {class: 'GCICSTRN'}) WHERE res.uacc <> 'NONE' RETURN res ORDER BY res.uacc"
-        }
-      ]
+      "query": "MATCH (res:Resource {class: 'GCICSTRN'}) WHERE res.uacc <> 'NONE' RETURN res ORDER BY res.uacc",
+      "prebuilt": false,
+      "platforms": [],
+      "category": "",
+      "description": null,
+      "guid": "n7o5rp56-10nn-3qqv-7895-36oo70os4151"
     },
     {
       "name": "RACF - All GCICSTRN Access for a Specific User",
-      "queryList": [
-        {
-          "final": false,
-          "title": "Select a User",
-          "query": "MATCH (u:User) RETURN u.name ORDER BY u.name"
-        },
-        {
-          "final": true,
-          "query": "MATCH (u:User {name: $result})-[r:HasPermission]->(res:Resource {class: 'GCICSTRN'}) RETURN u, r, res"
-        }
-      ]
+      "query": "MATCH (u:User {name: 'IBMUSER'})-[r:HasPermission]->(res:Resource {class: 'GCICSTRN'}) RETURN u, r, res",
+      "prebuilt": false,
+      "platforms": [],
+      "category": "",
+      "description": null,
+      "guid": "p9q7tr78-32pp-5ssx-9017-58qq92qu6373"
     },
     {
       "name": "RACF - All Users with Access to a Specific GCICSTRN Profile",
-      "queryList": [
-        {
-          "final": false,
-          "title": "Select a GCICSTRN Profile",
-          "query": "MATCH (res:Resource {class: 'GCICSTRN'}) RETURN res.name ORDER BY res.name"
-        },
-        {
-          "final": true,
-          "query": "MATCH (u:User)-[r:HasPermission]->(res:Resource {class: 'GCICSTRN', name: $result}) RETURN u, r, res"
-        }
-      ]
+      "query": "MATCH (u:User)-[r:HasPermission]->(res:Resource {class: 'GCICSTRN', name: 'GCICSTRNNAME'}) RETURN u, r, res",
+      "prebuilt": false,
+      "platforms": [],
+      "category": "",
+      "description": null,
+      "guid": "o8p6sq67-21oo-4rrw-8906-47pp81pt5262"
     }
-  ]
-}
+]
