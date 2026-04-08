@@ -9,13 +9,13 @@ ALL_CLASSES = ["GROUP", "USER", "SURROGAT", "UNIXPRIV", "FACILITY", "DATASET", "
 
 # Simple tsocmd commands for non-dataset classes
 SIMPLE_COMMANDS = {
-    "GROUP":    ('tsocmd "LISTGRP *"',              "rhoundoutput_GROUP.txt"),
-    "USER":     ('tsocmd "LISTUSER *"',             "rhoundoutput_USER.txt"),
-    "SURROGAT": ('tsocmd "RLIST SURROGAT * ALL"',   "rhoundoutput_SURROGAT.txt"),
-    "UNIXPRIV": ('tsocmd "RLIST UNIXPRIV * ALL"',   "rhoundoutput_UNIXPRIV.txt"),
-    "FACILITY": ('tsocmd "RLIST FACILITY * ALL"',   "rhoundoutput_FACILITY.txt"),
-    "TCICSTRN": ('tsocmd "RLIST TCICSTRN * ALL"',   "rhoundoutput_TCICSTRN.txt"),
-    "GCICSTRN": ('tsocmd "RLIST GCICSTRN * ALL"',   "rhoundoutput_GCICSTRN.txt"),
+    "GROUP":    ('tsocmd "LISTGRP *"',              "racfhound_GROUP.txt"),
+    "USER":     ('tsocmd "LISTUSER *"',             "racfhound_USER.txt"),
+    "SURROGAT": ('tsocmd "RLIST SURROGAT * ALL"',   "racfhound_SURROGAT.txt"),
+    "UNIXPRIV": ('tsocmd "RLIST UNIXPRIV * ALL"',   "racfhound_UNIXPRIV.txt"),
+    "FACILITY": ('tsocmd "RLIST FACILITY * ALL"',   "racfhound_FACILITY.txt"),
+    "TCICSTRN": ('tsocmd "RLIST TCICSTRN * ALL"',   "racfhound_TCICSTRN.txt"),
+    "GCICSTRN": ('tsocmd "RLIST GCICSTRN * ALL"',   "racfhound_GCICSTRN.txt"),
 }
 
 
@@ -54,7 +54,7 @@ def collect_datasets(client, delay, output_dir):
     combined_output = []
     for name in profile_names:
         generic_kw = " GENERIC" if any(c in name for c in ('*', '%')) else ""
-        _, stdout, stderr = client.exec_command(f"tsocmd \"LISTDSD DA('{name}') ALL{generic_kw}\"")
+        _, stdout, stderr = client.exec_command(f"tsocmd \"LISTDSD DATASET('{name}') ALL{generic_kw}\"")
         out = stdout.read().decode('utf-8', errors='replace')
         err = stderr.read().decode('utf-8', errors='replace')
         if out:
@@ -62,7 +62,7 @@ def collect_datasets(client, delay, output_dir):
         if err:
             print(f"[datasets] STDERR for {name}: {err}", file=sys.stderr)
 
-    output_path = os.path.join(output_dir, "rhoundoutput_DATASET.txt")
+    output_path = os.path.join(output_dir, "racfhound_DATASET.txt")
     with open(output_path, "w") as f:
         f.write("\n".join(combined_output))
     print(f"[datasets] Output saved to {output_path}")
@@ -124,7 +124,7 @@ def collect(host, username, password=None, key_path=None, port=22, delay=0.0, cl
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description='SSH into the mainframe and run tsocmd to collect RACF data',
+        description='A tool to SSH into the mainframe and collect RACF information',
         formatter_class=argparse.RawTextHelpFormatter,
     )
     parser.add_argument("host", help="Target hostname or IP")
@@ -133,7 +133,7 @@ if __name__ == "__main__":
     parser.add_argument("--key", dest="key_path", help="Path to SSH private key")
     parser.add_argument("--port", type=int, default=22, help="SSH port (default: 22)")
     parser.add_argument("--delay", type=float, default=0.0, metavar="SECONDS",
-                        help="Seconds to wait between commands (default: 0)")
+                        help="Seconds to wait between commands (default: 0.0)")
 
     class_group = parser.add_mutually_exclusive_group()
     class_group.add_argument(
