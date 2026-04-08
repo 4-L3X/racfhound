@@ -1,4 +1,0 @@
-{
-    "name": "RACF - GCICSTRN Group Members (CICS Transaction Groups)",
-    "query": "MATCH (g:Resource {class: 'GCICSTRN'})-[r:ContainsMember]->(t:Resource {class: 'TCICSTRN'}) RETURN g, r, t"
-}

@@ -1,0 +1,4 @@
+{
+    "name": "RACF SURROGAT - SURROGAT Chain (User -> Profile -> Target User)",
+    "query": "MATCH (u:RACF_User)-[r:RACF_HasPermission]->(res:RACF_Resource)-[t:RACF_TargetsUser]->(target:RACF_User) WHERE res.class = 'SURROGAT' RETURN u, r, res, t, target"
+}

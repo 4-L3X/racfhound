@@ -1,4 +1,0 @@
-{
-    "name": "RACF - Users with AUDITOR Attribute",
-    "query": "MATCH (u:User) WHERE u.attributes CONTAINS 'AUDITOR' RETURN u"
-}

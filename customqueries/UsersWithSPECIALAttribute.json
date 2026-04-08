@@ -1,4 +1,0 @@
-{
-    "name": "RACF - Users with SPECIAL Attribute",
-    "query": "MATCH (u:User) WHERE u.attributes CONTAINS 'SPECIAL' RETURN u"
-}

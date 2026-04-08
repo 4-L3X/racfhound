@@ -1,0 +1,4 @@
+{
+    "name": "RACF CICS - GCICSTRN Profiles with Public UACC (Not NONE)",
+    "query": "MATCH (res:RACF_Resource {class: 'GCICSTRN'}) WHERE res.uacc <> 'NONE' RETURN res ORDER BY res.uacc"
+}

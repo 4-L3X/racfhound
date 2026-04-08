@@ -1,0 +1,4 @@
+{
+    "name": "RACF GROUP - All Group Memberships (Users)",
+    "query": "MATCH (u:RACF_User)-[r:RACF_MemberOf]->(g:RACF_Group) RETURN u, r, g"
+}

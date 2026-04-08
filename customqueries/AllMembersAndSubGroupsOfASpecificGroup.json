@@ -1,4 +1,0 @@
-{
-      "name": "RACF - All Members and Subgroups of a Specific Group",
-      "query": "MATCH (n)-[r:MemberOf|SubGroupOf]->(g:Group {name: 'GROUPNAME'}) RETURN n, r, g"
-}

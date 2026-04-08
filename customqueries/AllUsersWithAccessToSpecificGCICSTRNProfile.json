@@ -1,4 +1,0 @@
-{
-      "name": "RACF - All Users with Access to a Specific GCICSTRN Profile",
-      "query": "MATCH (u:User)-[r:HasPermission]->(res:Resource {class: 'GCICSTRN', name: 'GCICSTRNNAME'}) RETURN u, r, res"
-}

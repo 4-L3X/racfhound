@@ -1,4 +1,0 @@
-{
-    "name": "RACF - Users with OPERATIONS Attribute",
-    "query": "MATCH (u:User) WHERE u.attributes CONTAINS 'OPERATIONS' RETURN u"
-}

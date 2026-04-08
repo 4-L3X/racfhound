@@ -1,0 +1,4 @@
+{
+      "name": "RACF CICS - All TCICSTRN Access for a Specific User",
+      "query": "MATCH (u:RACF_User {name: 'IBMUSER'})-[r:RACF_HasPermission]->(res:RACF_Resource {class: 'TCICSTRN'}) RETURN u, r, res"
+}

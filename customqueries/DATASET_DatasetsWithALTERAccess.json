@@ -1,0 +1,4 @@
+{
+    "name": "RACF DATASET - Datasets with ALTER Access",
+    "query": "MATCH (u)-[r:RACF_HasDatasetAccess]->(d:RACF_Dataset) WHERE r.access = 'ALTER' RETURN u, r, d"
+}

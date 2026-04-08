@@ -1,4 +1,0 @@
-{
-      "name": "RACF - All FACILITY Access for a Specific User",
-      "query": "MATCH (u:User {name: 'IBMUSER'})-[r:HasPermission]->(res:Resource {class: 'FACILITY'}) RETURN u, r, res"
-}

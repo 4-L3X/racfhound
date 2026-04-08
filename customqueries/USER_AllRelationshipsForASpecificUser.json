@@ -1,0 +1,4 @@
+{
+      "name": "RACF USER - All Relationships for a Specific User",
+      "query": "MATCH (u:RACF_User {name: 'IBMUSER'})-[r]-(n) RETURN u, r, n"
+}

@@ -1,0 +1,4 @@
+{
+    "name": "RACF CICS - Users with Access to a GCICSTRN Group (and its member transactions)",
+    "query": "MATCH (u:RACF_User)-[p:RACF_HasPermission]->(g:RACF_Resource {class: 'GCICSTRN'})-[c:RACF_ContainsMember]->(t:RACF_Resource {class: 'TCICSTRN'}) RETURN u, p, g, c, t"
+}

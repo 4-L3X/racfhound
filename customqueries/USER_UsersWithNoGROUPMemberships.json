@@ -1,0 +1,4 @@
+{
+    "name": "RACF USER - Users with No Group Membership",
+    "query": "MATCH (u:RACF_User) WHERE NOT (u)-[:MemberOf]->(:RACF_Group) RETURN u"
+}

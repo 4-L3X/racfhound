@@ -1,4 +1,0 @@
-{
-      "name": "RACF - All Users with Access to a Specific Dataset",
-      "query": "MATCH (u)-[r:HasDatasetAccess]->(d:Dataset {name: 'DATA.SET'}) RETURN u, r, d"
-}

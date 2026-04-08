@@ -1,0 +1,4 @@
+{
+    "name": "RACF DATASET - Datasets with Public UACC (Not NONE)",
+    "query": "MATCH (d:RACF_Dataset) WHERE d.uacc <> 'NONE' RETURN d ORDER BY d.uacc"
+}

@@ -1,0 +1,4 @@
+{
+    "name": "RACF CICS - All GCICSTRN Relationships",
+    "query": "MATCH (u)-[r:RACF_HasPermission]->(res:RACF_Resource {class: 'GCICSTRN'}) RETURN u, r, res"
+}

@@ -1,0 +1,4 @@
+{
+    "name": "RACF UNIXPRIV - Users with BPX.SUPERUSER Access",
+    "query": "MATCH (u:RACF_User)-[r:RACF_HasPermission]->(res:RACF_Resource {class: 'FACILITY'}) WHERE res.name = 'BPX.SUPERUSER' RETURN u, r, res"
+}

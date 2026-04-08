@@ -1,0 +1,4 @@
+{
+    "name": "RACF UNIXPRIV - All UNIXPRIV Relationships",
+    "query": "MATCH (u)-[r:RACF_HasPermission]->(res:RACF_Resource)-[t:RACF_TargetsUser]->(target:RACF_User) WHERE res.class = 'UNIXPRIV' RETURN u, r, res, t, target"
+}

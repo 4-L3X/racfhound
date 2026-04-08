@@ -1,4 +1,4 @@
 {
     "name": "RACF - All Resources with No Auditing",
-    "query": "MATCH (n) WHERE (n.auditing IS NULL OR n.auditing = 'NONE') AND (n:Resource OR n:Dataset) RETURN n ORDER BY n.class, n.name"
+    "query": "MATCH (n) WHERE (n.auditing IS NULL OR n.auditing = 'NONE') AND (n:RACF_Resource OR n:RACF_Dataset) RETURN n ORDER BY n.class, n.name"
 }

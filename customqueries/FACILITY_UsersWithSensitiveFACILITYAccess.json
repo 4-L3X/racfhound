@@ -1,0 +1,4 @@
+{
+    "name": "RACF FACILITY - Users with Sensitive FACILITY Access",
+    "query": "MATCH (u:RACF_User)-[r:RACF_HasPermission]->(res:RACF_Resource {class: 'FACILITY'}) WHERE res.name IN ['BPX.SUPERUSER', 'BPX.DAEMON', 'IRR.PASSWORD.RESET', 'IRR.LISTUSER', 'RACF.SETROPTS.STATISTICS'] OR res.name STARTS WITH 'IRR.RADMIN' OR res.name STARTS WITH 'STGADMIN' OR res.name STARTS WITH 'MVSADMIN' RETURN u, r, res ORDER BY res.name"
+}

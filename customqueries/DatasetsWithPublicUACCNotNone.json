@@ -1,4 +1,0 @@
-{
-    "name": "RACF - Datasets with Public UACC (Not NONE)",
-    "query": "MATCH (d:Dataset) WHERE d.uacc <> 'NONE' RETURN d ORDER BY d.uacc"
-}

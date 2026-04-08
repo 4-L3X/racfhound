@@ -1,0 +1,4 @@
+{
+    "name": "RACF FACILITY - All FACILITY Relationships",
+    "query": "MATCH (u)-[r:RACF_HasPermission]->(res:RACF_Resource {class: 'FACILITY'}) RETURN u, r, res"
+}

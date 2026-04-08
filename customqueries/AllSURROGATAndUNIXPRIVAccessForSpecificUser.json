@@ -1,4 +1,0 @@
-{
-      "name": "RACF - All SURROGAT and UNIXPRIV Access for a Specific User",
-      "query": "MATCH (u:User {name: 'IBMUSER'})-[r:HasPermission]->(res:Resource)-[t:TargetsUser]->(target:User) RETURN u, r, res, t, target"
-}

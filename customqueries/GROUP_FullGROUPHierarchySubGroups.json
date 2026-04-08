@@ -1,0 +1,4 @@
+{
+    "name": "RACF GROUP - Full Group Hierarchy (SubGroupOf)",
+    "query": "MATCH (sg:RACF_Group)-[r:RACF_SubGroupOf]->(pg:RACF_Group) RETURN sg, r, pg"
+}

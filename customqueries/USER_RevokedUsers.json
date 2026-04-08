@@ -1,0 +1,4 @@
+{
+    "name": "RACF USER - Revoked Users",
+    "query": "MATCH (u:RACF_User) WHERE u.revoked = true RETURN u"
+}

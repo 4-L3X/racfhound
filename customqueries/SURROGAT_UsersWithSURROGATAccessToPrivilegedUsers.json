@@ -1,0 +1,4 @@
+{
+      "name": "RACF SURROGAT - Users with SURROGAT Access to Privileged Users",
+      "query": "MATCH (u:RACF_User)-[r:RACF_HasPermission]->(res:RACF_Resource)-[t:RACF_TargetsUser]->(target:RACF_User) WHERE res.class = 'SURROGAT' AND (res.name CONTAINS 'ADMIN' OR res.name CONTAINS 'SYS' OR res.name CONTAINS 'IBMUSER') RETURN u, r, res, t, target"
+}
