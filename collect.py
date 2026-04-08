@@ -124,7 +124,13 @@ def collect(host, username, password=None, key_path=None, port=22, delay=0.0, cl
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description='A tool to SSH into the mainframe and collect RACF information',
+        description=r"""
+    ____             ______  __                      __
+   / __ \____ ______/ __/ / / /___  __  ______  ____/ /
+  / /_/ / __ `/ ___/ /_/ /_/ / __ \/ / / / __ \/ __  / 
+ / _, _/ /_/ / /__/ __/ __  / /_/ / /_/ / / / / /_/ /  
+/_/ |_|\__,_/\___/_/ /_/ /_/\____/\__,_/_/ /_/\__,_/   
+                             Six Degrees of IBMUSER """,
         formatter_class=argparse.RawTextHelpFormatter,
     )
     parser.add_argument("host", help="Target hostname or IP")
