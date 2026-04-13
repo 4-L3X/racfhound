@@ -7,7 +7,7 @@ import time
 
 ALL_CLASSES = ["GROUP", "USER", "SURROGAT", "UNIXPRIV", "FACILITY", "DATASET", "TCICSTRN", "GCICSTRN"]
 
-# Simple tsocmd commands for non-dataset classes
+# Simple TSO commands for non-dataset classes
 SIMPLE_COMMANDS = {
     "GROUP":    ('tsocmd "LISTGRP *"',              "racfhound_GROUP.txt"),
     "USER":     ('tsocmd "LISTUSER *"',             "racfhound_USER.txt"),
@@ -20,10 +20,9 @@ SIMPLE_COMMANDS = {
 
 
 def collect_datasets(client, delay, output_dir):
-    """Two-step dataset enumeration: SEARCH to list profiles, then LISTDSD per profile."""
-
+    
     # Step 1 – get all dataset profile names
-    print("[datasets] Searching for dataset profiles...")
+    print("[datasets] Searching for DATASET profiles...")
     _, stdout, stderr = client.exec_command('tsocmd "SEARCH CLASS(DATASET) FILTER(**)"')
     search_out = stdout.read().decode('utf-8', errors='replace')
     search_err = stderr.read().decode('utf-8', errors='replace')
@@ -44,7 +43,7 @@ def collect_datasets(client, delay, output_dir):
             if not set(parts[0]).issubset(set("-=")):  # skip separator lines
                 profile_names.append(parts[0])
 
-    print(f"[datasets] Found {len(profile_names)} dataset profiles.")
+    print(f"[datasets] Found {len(profile_names)} DATASET profiles.")
 
     # Step 2 – enumerate each profile individually
     if delay > 0:
@@ -130,7 +129,7 @@ if __name__ == "__main__":
   / /_/ / __ `/ ___/ /_/ /_/ / __ \/ / / / __ \/ __  / 
  / _, _/ /_/ / /__/ __/ __  / /_/ / /_/ / / / / /_/ /  
 /_/ |_|\__,_/\___/_/ /_/ /_/\____/\__,_/_/ /_/\__,_/   
-                             Six Degrees of IBMUSER """,
+                             Six Degrees of IBMUSER""",
         formatter_class=argparse.RawTextHelpFormatter,
     )
     parser.add_argument("host", help="Target hostname or IP")
