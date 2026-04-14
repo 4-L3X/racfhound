@@ -131,7 +131,7 @@ class BloodHoundRegistrar:
                 return True
             elif response.status_code == 409:
                 self.logger.info("Icon types already registered")
-                return True
+                return False
             else:
                 self.logger.error(f"Upload failed: {response.status_code}")
                 self.logger.error(f"Response: {response.text}")

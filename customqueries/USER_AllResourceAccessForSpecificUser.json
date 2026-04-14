@@ -1,0 +1,4 @@
+{
+      "name": "RACF USER - All Resource Access for a Specific User (Chaining)",
+      "query": "MATCH (u:RACF_User {name: 'IBMUSER'})-[r:RACF_HasPermission]->(res:RACF_Resource)-[t:RACF_TargetsUser]->(target:RACF_User) OPTIONAL MATCH (target)-[r1:RACF_HasPermission]->(res1:RACF_Resource) RETURN u, r, res, t, target, r1, res1"
+}
