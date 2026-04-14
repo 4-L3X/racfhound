@@ -8,7 +8,7 @@
 ```
 
 ## Intro
-RacfHound is a simple Bloodhound ingestor for the RACF database in z/OS mainframes, written in Python. Current supported classes are GROUP, USER, FACILITY, SURROGAT, UNIXPRIV, DATASET, GCICSTRN and TCICSTRN.
+During a journey to learn more about the world, I thought it would be nice to build a Bloodhound ingestor for the RACF database in z/OS. RacfHound, therefore, is a simple RACF to Bloodhound collector and ingestor, written in Python. Enumeration and collection works by running TSO commands from the USS space via SSH. Current supported classes are GROUP, USER, FACILITY, SURROGAT, UNIXPRIV, DATASET, GCICSTRN and TCICSTRN.
 
 ## Installation
 ```bash
@@ -28,3 +28,5 @@ paramiko
 ## Usage
 
 
+## Disclaimer
+This tool has only been tested on a z/OS V2R4 mainframe environment. Given that it (currently) only performs seven, basic, commands on the mainframe, however, it should be rather compatible. Testing  and feedback is much appreciated!
