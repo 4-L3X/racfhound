@@ -34,14 +34,14 @@ from bhopengraph import OpenGraph, Node, Edge, Properties
 DIR = os.path.dirname(__file__)
 
 OUTPUT_DIR    = os.path.join(DIR, "output")
-GROUP_FILE    = os.path.join(OUTPUT_DIR, "rhoundoutput_GROUP.txt")
-USER_FILE     = os.path.join(OUTPUT_DIR, "rhoundoutput_USER.txt")
-SURROGAT_FILE  = os.path.join(OUTPUT_DIR, "rhoundoutput_SURROGAT.txt")
-UNIXPRIV_FILE  = os.path.join(OUTPUT_DIR, "rhoundoutput_UNIXPRIV.txt")
-FACILITY_FILE  = os.path.join(OUTPUT_DIR, "rhoundoutput_FACILITY.txt")
-DATASET_FILE   = os.path.join(OUTPUT_DIR, "rhoundoutput_DATASET.txt")
-TCICSTRN_FILE  = os.path.join(OUTPUT_DIR, "rhoundoutput_TCICSTRN.txt")
-GCICSTRN_FILE  = os.path.join(OUTPUT_DIR, "rhoundoutput_GCICSTRN.txt")
+GROUP_FILE    = os.path.join(OUTPUT_DIR, "racfhound_GROUP.txt")
+USER_FILE     = os.path.join(OUTPUT_DIR, "racfhound_USER.txt")
+SURROGAT_FILE  = os.path.join(OUTPUT_DIR, "racfhound_SURROGAT.txt")
+UNIXPRIV_FILE  = os.path.join(OUTPUT_DIR, "racfhound_UNIXPRIV.txt")
+FACILITY_FILE  = os.path.join(OUTPUT_DIR, "racfhound_FACILITY.txt")
+DATASET_FILE   = os.path.join(OUTPUT_DIR, "racfhound_DATASET.txt")
+TCICSTRN_FILE  = os.path.join(OUTPUT_DIR, "racfhound_TCICSTRN.txt")
+GCICSTRN_FILE  = os.path.join(OUTPUT_DIR, "racfhound_GCICSTRN.txt")
 OUTPUT_FILE   = os.path.join(OUTPUT_DIR, "racfhound.json")
 
 
@@ -655,7 +655,7 @@ def build_graph(groups, users, surrogat_profiles, unixpriv_profiles, facility_pr
             graph.add_edge_without_validation(
                 Edge(start_node=entry["user"], end_node=pid, kind="RACF_HasPermission", properties=ep)
             )
-        # Edge to the user the profile targets (e.g. MF101SK.SUBMIT -> MF101SK)
+        # Edge to the user the profile targets (e.g. USER.SUBMIT -> USER)
         target_uid = sp["profile"].split(".")[0]
         _ensure_user(graph, target_uid)
         graph.add_edge_without_validation(
@@ -689,7 +689,7 @@ def build_graph(groups, users, surrogat_profiles, unixpriv_profiles, facility_pr
             graph.add_edge_without_validation(
                 Edge(start_node=entry["user"], end_node=pid, kind="RACF_HasPermission", properties=ep)
             )
-        # Edge to the user the profile targets (e.g. MF101SK.SUBMIT -> MF101SK)
+        # Edge to the user the profile targets
         target_uid = up["profile"].split(".")[0]
         _ensure_user(graph, target_uid)
         graph.add_edge_without_validation(
@@ -831,12 +831,12 @@ def build_graph(groups, users, surrogat_profiles, unixpriv_profiles, facility_pr
     all_user_ids = [nid for nid, node in graph.nodes.items() if "RACF_User" in node.kinds]
 
     for profiles, class_name, edge_kind in [
-        (surrogat_profiles,  "SURROGAT",  "HasPermission"),
-        (unixpriv_profiles,  "UNIXPRIV",  "HasPermission"),
-        (facility_profiles,  "FACILITY",  "HasPermission"),
-        (tcicstrn_profiles,  "TCICSTRN",  "HasPermission"),
-        (gcicstrn_profiles,  "GCICSTRN",  "HasPermission"),
-        (dataset_profiles,   "DATASET",   "HasDatasetAccess"),
+        (surrogat_profiles,  "SURROGAT",  "RACF_HasPermission"),
+        (unixpriv_profiles,  "UNIXPRIV",  "RACF_HasPermission"),
+        (facility_profiles,  "FACILITY",  "RACF_HasPermission"),
+        (tcicstrn_profiles,  "TCICSTRN",  "RACF_HasPermission"),
+        (gcicstrn_profiles,  "GCICSTRN",  "RACF_HasPermission"),
+        (dataset_profiles,   "DATASET",   "RACF_HasDatasetAccess"),
     ]:
         for profile in profiles:
             if not profile["uacc"] or profile["uacc"] == "NONE":
@@ -851,7 +851,8 @@ def build_graph(groups, users, surrogat_profiles, unixpriv_profiles, facility_pr
                 ep.set_property("source", "UACC")
                 graph.add_edge_without_validation(
                     Edge(start_node=uid, end_node=pid, kind=edge_kind, properties=ep)
-                )
+                )   
+                
 
     return graph
 
