@@ -70,6 +70,9 @@ class BloodHoundRegistrar:
             self.logger.info("Logged out from BloodHound")
         except Exception as e:
             self.logger.warning(f"Logout warning: {e}")
+        finally:
+            self.token = None
+            self.session.headers.pop('Authorization', None)
 
     def get_existing_kinds(self):
         try:

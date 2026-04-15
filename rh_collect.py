@@ -52,8 +52,10 @@ def collect_datasets(client, delay, output_dir):
 
     combined_output = []
     for name in profile_names:
-        generic_kw = " GENERIC" if any(c in name for c in ('*', '%')) else ""
-        _, stdout, stderr = client.exec_command(f"tsocmd \"LISTDSD DATASET('{name}') ALL{generic_kw}\"")
+        # Escape single quotes for shell safety
+        safe_name = name.replace("'", "'\\''")
+        generic_kw = " GENERIC" if any(c in safe_name for c in ('*', '%')) else ""
+        _, stdout, stderr = client.exec_command(f"tsocmd \"LISTDSD DATASET('{safe_name}') ALL{generic_kw}\"")
         out = stdout.read().decode('utf-8', errors='replace')
         err = stderr.read().decode('utf-8', errors='replace')
         if out:
@@ -82,7 +84,7 @@ def collect(host, username, password=None, key_path=None, port=22, delay=0.0, cl
         }
         if key_path:
             connect_kwargs["key_filename"] = key_path
-        elif password:
+        elif password is not None:
             connect_kwargs["password"] = password
         else:
             print("Error: provide either --password or --key", file=sys.stderr)
@@ -90,7 +92,12 @@ def collect(host, username, password=None, key_path=None, port=22, delay=0.0, cl
 
         client.connect(**connect_kwargs, timeout=5)
 
-        os.makedirs("output", exist_ok=True)
+    except Exception as e:
+        print(f"Error: Failed to connect: {e}", file=sys.stderr)
+        sys.exit(1)
+
+    try:
+        os.makedirs("racfhound_output", exist_ok=True)
 
         simple = [(cls, *SIMPLE_COMMANDS[cls]) for cls in classes if cls in SIMPLE_COMMANDS]
         for i, (cls, command, output_file) in enumerate(simple):
@@ -104,7 +111,7 @@ def collect(host, username, password=None, key_path=None, port=22, delay=0.0, cl
             errors = stderr.read().decode('utf-8', errors='replace')
 
             if output:
-                output_path = os.path.join("output", output_file)
+                output_path = os.path.join("racfhound_output", output_file)
                 with open(output_path, "w") as f:
                     f.write(output)
                 print(f"[{cls}] Output saved to {output_path}")
@@ -115,7 +122,7 @@ def collect(host, username, password=None, key_path=None, port=22, delay=0.0, cl
             if simple and delay > 0:
                 print(f"[rate-limit] Sleeping {delay}s before dataset enumeration...")
                 time.sleep(delay)
-            collect_datasets(client, delay, "output")
+            collect_datasets(client, delay, "racfhound_output")
 
     finally:
         client.close()

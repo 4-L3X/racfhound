@@ -29,11 +29,12 @@ Edges
 """
 import re
 import os
+import sys
 from bhopengraph import OpenGraph, Node, Edge, Properties
 
 DIR = os.path.dirname(__file__)
 
-OUTPUT_DIR    = os.path.join(DIR, "output")
+OUTPUT_DIR    = os.path.join(DIR, "racfhound_output")
 GROUP_FILE    = os.path.join(OUTPUT_DIR, "racfhound_GROUP.txt")
 USER_FILE     = os.path.join(OUTPUT_DIR, "racfhound_USER.txt")
 SURROGAT_FILE  = os.path.join(OUTPUT_DIR, "racfhound_SURROGAT.txt")
@@ -255,7 +256,7 @@ def parse_rlist(text, class_name):
         line = raw_line.rstrip()
 
         # New profile record
-        m = re.match(rf'^{class_name}\s+(\S+)', line)
+        m = re.match(rf'^{re.escape(class_name)}\s+(\S+)', line)
         if m:
             if current:
                 profiles.append(current)
@@ -851,7 +852,7 @@ def build_graph(groups, users, surrogat_profiles, unixpriv_profiles, facility_pr
                 ep.set_property("source", "UACC")
                 graph.add_edge_without_validation(
                     Edge(start_node=uid, end_node=pid, kind=edge_kind, properties=ep)
-                )   
+                )
                 
 
     return graph
@@ -860,8 +861,12 @@ def build_graph(groups, users, surrogat_profiles, unixpriv_profiles, facility_pr
 # ── Entry point ────────────────────────────────────────────────────────────────
 
 def read(path):
-    with open(path, "r", encoding="utf-8", errors="replace") as f:
-        return f.read()
+    try:
+        with open(path, "r", encoding="utf-8", errors="replace") as f:
+            return f.read()
+    except FileNotFoundError:
+        print(f"Error: File not found: {path}", file=sys.stderr)
+        sys.exit(1)
 
 
 def main():
