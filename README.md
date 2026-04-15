@@ -8,7 +8,7 @@
 ```
 
 ## Intro
-During a journey to learn more about the world, I thought it would be nice to build a Bloodhound ingestor for the RACF database in z/OS. RacfHound, therefore, is a simple RACF to Bloodhound collector and ingestor, written in Python. Enumeration and collection works by running TSO commands from the USS space via SSH. Current supported classes are GROUP, USER, FACILITY, SURROGAT, UNIXPRIV, DATASET, GCICSTRN and TCICSTRN.
+In a journey to learn more about the world, I decided to build a Bloodhound ingestor for the RACF database in z/OS. RacfHound, therefore, is a simple RACF to Bloodhound collector and ingestor, written in Python. Enumeration and collection works by running TSO commands from the USS space via SSH. Current supported classes are GROUP, USER, FACILITY, SURROGAT, UNIXPRIV, DATASET, GCICSTRN and TCICSTRN.
 
 ## Installation
 ```bash
