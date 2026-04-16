@@ -8,7 +8,7 @@
 ```
 
 ## Intro
-In a journey to learn more about the world, I decided to build a Bloodhound ingestor for the RACF database in z/OS. RacfHound, therefore, is a simple RACF to Bloodhound collector and ingestor, written in Python. Enumeration and collection works by running TSO commands from the USS space via SSH. 
+In a journey to learn more about the world, I decided to build a Bloodhound ingestor for the RACF database in z/OS. RacfHound, therefore, is a simple RACF to Bloodhound collector and ingestor, written in Python. Enumeration and collection works by running TSO commands from the USS space via SSH. As Bloodhound OpenGraph is yet to support pathfinding etc. querying the data is done through cypher queries, of which I have included several. 
 
 Current supported classes are GROUP, USER, FACILITY, SURROGAT, UNIXPRIV, DATASET, GCICSTRN and TCICSTRN.
 
@@ -44,7 +44,7 @@ pip install -r requirements.txt
 ```bash
 python rh_collect.py TARGET/IP USERNAME --password PASSWORD --all
 ```
-Collector script that does the enumeration. Creates ```racfhound_output/``` in working directory where it stores output as .txt files.
+Collector script that does the enumeration. Creates ```racfhound_output/``` in working directory where it stores output as .txt files. If SSH is not available the collection could technically be done with JCL, as long as the output is extracted and saved in the proper format (e.g. racfhound_GROUP.txt for groups.)
 ##### Arguments:
 | Pos. argument | Description |
 |------|-------------|
@@ -65,7 +65,7 @@ Collector script that does the enumeration. Creates ```racfhound_output/``` in w
 ```bash
 python rh_parse.py
 ```
-Parser script that converts the output of the collector to JSON. Output is placed in `racfhound_output/` as `racfhound.json`, which can then be uploaded to BloodHound. 
+Parser script that converts the output of the collector to JSON. Output is placed in `racfhound_output/` as `racfhound.json`, which can then be uploaded to BloodHound.
 
 
 ### rh_icons.py
