@@ -149,8 +149,8 @@ def main():
     parser.add_argument('-s', '--server', required=True, help='BloodHound server URL')
     parser.add_argument('-u', '--username', required=True, help='BloodHound username')
     parser.add_argument('-p', '--password', required=True, help='BloodHound password')
-    parser.add_argument('--reset', action='store_true', help='Reset existing custom node kinds before uploading')
-    parser.add_argument('--list-existing', action='store_true', help='List existing custom node kinds and exit')
+    parser.add_argument('--reset', action='store_true', help='Reset any existing custom icons before uploading')
+    parser.add_argument('--list-existing', action='store_true', help='List existing custom icons and exit')
 
     args = parser.parse_args()
 

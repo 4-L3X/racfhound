@@ -115,8 +115,6 @@ def collect(host, username, password=None, key_path=None, port=22, delay=0.0, cl
                 with open(output_path, "w") as f:
                     f.write(output)
                 print(f"[{cls}] Output saved to {output_path}")
-            if errors:
-                print(f"[{cls}] STDERR: {errors}", file=sys.stderr)
 
         if "DATASET" in classes:
             if simple and delay > 0:
