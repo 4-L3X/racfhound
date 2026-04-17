@@ -25,10 +25,15 @@ Current supported classes are GROUP, USER, FACILITY, SURROGAT, UNIXPRIV, DATASET
 - `RACF_TargetsUser         -- Resource -> User`
 
 ## Requirements:
-- `BloodHound > 8.0`
-- `Python > 3.13`
+- `BloodHound >= 8.0`
+- `Python >= 3.13`
 - `bhopengraph`
 - `paramiko`
+
+For icon upload:
+- `requests >= 2.28.0`
+- `urllib3 >= 1.26.0`
+
 
 ## Installation
 ```bash
