@@ -8,7 +8,7 @@
 ```
 
 ## Intro
-In a journey to learn more about the world, I decided to build a Bloodhound ingestor for the RACF database in z/OS. RacfHound, therefore, is a simple RACF to Bloodhound collector and ingestor, written in Python. Enumeration and collection works by running TSO commands from the USS space via SSH. As Bloodhound OpenGraph is yet to support pathfinding etc. querying the data is done through cypher queries, of which I have included several. 
+In a journey to learn more about the world, I decided to build a BloodHound ingestor for the RACF database in z/OS. RacfHound, therefore, is a simple RACF to BloodHound collector and ingestor, written in Python. Enumeration and collection works by running TSO commands from the USS space via SSH. As BloodHound OpenGraph is yet to support pathfinding etc. querying the data is done through cypher queries, of which I have included several. 
 
 Current supported classes are GROUP, USER, FACILITY, SURROGAT, UNIXPRIV, DATASET, GCICSTRN and TCICSTRN.
 
