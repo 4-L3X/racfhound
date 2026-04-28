@@ -32,18 +32,18 @@ import os
 import sys
 from bhopengraph import OpenGraph, Node, Edge, Properties
 
-DIR = os.path.dirname(__file__)
+INPUT_DIR   = "racfhound_output"
+OUTPUT_FILE = os.path.join(INPUT_DIR, "racfhound.json")
 
-OUTPUT_DIR    = os.path.join(DIR, "racfhound_output")
-GROUP_FILE    = os.path.join(OUTPUT_DIR, "racfhound_GROUP.txt")
-USER_FILE     = os.path.join(OUTPUT_DIR, "racfhound_USER.txt")
-SURROGAT_FILE  = os.path.join(OUTPUT_DIR, "racfhound_SURROGAT.txt")
-UNIXPRIV_FILE  = os.path.join(OUTPUT_DIR, "racfhound_UNIXPRIV.txt")
-FACILITY_FILE  = os.path.join(OUTPUT_DIR, "racfhound_FACILITY.txt")
-DATASET_FILE   = os.path.join(OUTPUT_DIR, "racfhound_DATASET.txt")
-TCICSTRN_FILE  = os.path.join(OUTPUT_DIR, "racfhound_TCICSTRN.txt")
-GCICSTRN_FILE  = os.path.join(OUTPUT_DIR, "racfhound_GCICSTRN.txt")
-OUTPUT_FILE   = os.path.join(OUTPUT_DIR, "racfhound.json")
+GROUP_FILE    = "racfhound_GROUP.txt"
+USER_FILE     = "racfhound_USER.txt"
+SURROGAT_FILE = "racfhound_SURROGAT.txt"
+UNIXPRIV_FILE = "racfhound_UNIXPRIV.txt"
+FACILITY_FILE = "racfhound_FACILITY.txt"
+DATASET_FILE  = "racfhound_DATASET.txt"
+TCICSTRN_FILE = "racfhound_TCICSTRN.txt"
+GCICSTRN_FILE = "racfhound_GCICSTRN.txt"
+OUTPUT_FILE   = "racfhound.json"
 
 
 # ── Parsers ────────────────────────────────────────────────────────────────────
@@ -870,15 +870,17 @@ def read(path):
 
 
 def main():
-    groups_raw             = read(GROUP_FILE)
-    users_raw              = read(USER_FILE)
-    surrogat_raw           = read(SURROGAT_FILE)
-    unixpriv_raw           = read(UNIXPRIV_FILE)
-    facility_raw           = read(FACILITY_FILE)
-    dataset_raw            = read(DATASET_FILE)
-    tcicstrn_raw           = read(TCICSTRN_FILE)
-    gcicstrn_raw           = read(GCICSTRN_FILE)
+    input_dir = INPUT_DIR
+    output_path = OUTPUT_FILE
 
+    groups_raw             = read(os.path.join(input_dir, GROUP_FILE))
+    users_raw              = read(os.path.join(input_dir, USER_FILE))
+    surrogat_raw           = read(os.path.join(input_dir, SURROGAT_FILE))
+    unixpriv_raw           = read(os.path.join(input_dir, UNIXPRIV_FILE))
+    facility_raw           = read(os.path.join(input_dir, FACILITY_FILE))
+    dataset_raw            = read(os.path.join(input_dir, DATASET_FILE))
+    tcicstrn_raw           = read(os.path.join(input_dir, TCICSTRN_FILE))
+    gcicstrn_raw           = read(os.path.join(input_dir, GCICSTRN_FILE))
     groups             = parse_groups(groups_raw) if groups_raw else []
     users              = parse_users(users_raw) if users_raw else []
     surrogat_profiles  = parse_rlist(surrogat_raw, "SURROGAT") if surrogat_raw else []
@@ -899,8 +901,8 @@ def main():
     graph = build_graph(groups, users, surrogat_profiles, unixpriv_profiles, facility_profiles, dataset_profiles, tcicstrn_profiles, gcicstrn_profiles)
     print(f"Graph:  {graph.get_node_count()} nodes, {graph.get_edge_count()} edges.")
 
-    graph.export_to_file(OUTPUT_FILE, indent=2)
-    print(f"Saved to {OUTPUT_FILE}")
+    graph.export_to_file(output_path, indent=2)
+    print(f"Saved to {output_path}")
 
 
 if __name__ == "__main__":

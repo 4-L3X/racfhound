@@ -22,12 +22,9 @@ SIMPLE_COMMANDS = {
 def collect_datasets(client, delay, output_dir):
     
     # Step 1 – get all dataset profile names
-    print("[datasets] Searching for DATASET profiles...")
+    print("[DATASET] Searching for DATASET profiles...")
     _, stdout, stderr = client.exec_command('tsocmd "SEARCH CLASS(DATASET) FILTER(**)"')
     search_out = stdout.read().decode('utf-8', errors='replace')
-    search_err = stderr.read().decode('utf-8', errors='replace')
-    if search_err:
-        print(f"[datasets] STDERR: {search_err}", file=sys.stderr)
 
     # Parse names: skip blank lines and header/separator lines
     profile_names = []
@@ -43,11 +40,11 @@ def collect_datasets(client, delay, output_dir):
             if not set(parts[0]).issubset(set("-=")):  # skip separator lines
                 profile_names.append(parts[0])
 
-    print(f"[datasets] Found {len(profile_names)} DATASET profiles.")
+    print(f"[DATASET] Found {len(profile_names)} DATASET profiles. Starting DATASET collection...")
 
     # Step 2 – enumerate each profile individually
     if delay > 0:
-        print(f"[rate-limit] Sleeping {delay}s before profile enumeration...")
+        print(f"[RATE-LIMIT] Sleeping {delay}s before profile enumeration...")
         time.sleep(delay)
 
     combined_output = []
@@ -57,19 +54,16 @@ def collect_datasets(client, delay, output_dir):
         generic_kw = " GENERIC" if any(c in safe_name for c in ('*', '%')) else ""
         _, stdout, stderr = client.exec_command(f"tsocmd \"LISTDSD DATASET('{safe_name}') ALL{generic_kw}\"")
         out = stdout.read().decode('utf-8', errors='replace')
-        err = stderr.read().decode('utf-8', errors='replace')
         if out:
             combined_output.append(out)
-        if err:
-            print(f"[datasets] STDERR for {name}: {err}", file=sys.stderr)
 
     output_path = os.path.join(output_dir, "racfhound_DATASET.txt")
     with open(output_path, "w") as f:
         f.write("\n".join(combined_output))
-    print(f"[datasets] Output saved to {output_path}")
+    print(f"[DATASET] Output saved to {output_path}")
 
 
-def collect(host, username, password=None, key_path=None, port=22, delay=0.0, classes=None):
+def collect(host, username, password=None, key_path=None, port=22, delay=0.0, classes=None, output_dir="racfhound_output"):
     if classes is None:
         classes = ALL_CLASSES
 
@@ -97,12 +91,12 @@ def collect(host, username, password=None, key_path=None, port=22, delay=0.0, cl
         sys.exit(1)
 
     try:
-        os.makedirs("racfhound_output", exist_ok=True)
+        os.makedirs(output_dir, exist_ok=True)
 
         simple = [(cls, *SIMPLE_COMMANDS[cls]) for cls in classes if cls in SIMPLE_COMMANDS]
         for i, (cls, command, output_file) in enumerate(simple):
             if i > 0 and delay > 0:
-                print(f"[rate-limit] Sleeping {delay}s before next command...")
+                print(f"[RATE-LIMIT] Sleeping {delay}s before next command...")
                 time.sleep(delay)
 
             stdin, stdout, stderr = client.exec_command(command)
@@ -111,16 +105,16 @@ def collect(host, username, password=None, key_path=None, port=22, delay=0.0, cl
             errors = stderr.read().decode('utf-8', errors='replace')
 
             if output:
-                output_path = os.path.join("racfhound_output", output_file)
+                output_path = os.path.join(output_dir, output_file)
                 with open(output_path, "w") as f:
                     f.write(output)
                 print(f"[{cls}] Output saved to {output_path}")
 
         if "DATASET" in classes:
             if simple and delay > 0:
-                print(f"[rate-limit] Sleeping {delay}s before dataset enumeration...")
+                print(f"[RATE-LIMIT] Sleeping {delay}s before DATASET enumeration...")
                 time.sleep(delay)
-            collect_datasets(client, delay, "racfhound_output")
+            collect_datasets(client, delay, output_dir)
 
     finally:
         client.close()
