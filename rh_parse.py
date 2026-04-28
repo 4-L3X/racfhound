@@ -865,19 +865,28 @@ def read(path):
         with open(path, "r", encoding="utf-8", errors="replace") as f:
             return f.read()
     except FileNotFoundError:
-        print(f"Error: File not found: {path}", file=sys.stderr)
-        sys.exit(1)
+        print(f"Warning: File not found, skipping: {path}", file=sys.stderr)
+        return None
 
 
 def main():
-    groups             = parse_groups(read(GROUP_FILE))
-    users              = parse_users(read(USER_FILE))
-    surrogat_profiles  = parse_rlist(read(SURROGAT_FILE), "SURROGAT")
-    unixpriv_profiles  = parse_rlist(read(UNIXPRIV_FILE), "UNIXPRIV")
-    facility_profiles  = parse_rlist(read(FACILITY_FILE), "FACILITY")
-    dataset_profiles   = parse_datasets(read(DATASET_FILE))
-    tcicstrn_profiles  = parse_rlist(read(TCICSTRN_FILE), "TCICSTRN")
-    gcicstrn_profiles  = parse_gcicstrn(read(GCICSTRN_FILE))
+    groups_raw             = read(GROUP_FILE)
+    users_raw              = read(USER_FILE)
+    surrogat_raw           = read(SURROGAT_FILE)
+    unixpriv_raw           = read(UNIXPRIV_FILE)
+    facility_raw           = read(FACILITY_FILE)
+    dataset_raw            = read(DATASET_FILE)
+    tcicstrn_raw           = read(TCICSTRN_FILE)
+    gcicstrn_raw           = read(GCICSTRN_FILE)
+
+    groups             = parse_groups(groups_raw) if groups_raw else []
+    users              = parse_users(users_raw) if users_raw else []
+    surrogat_profiles  = parse_rlist(surrogat_raw, "SURROGAT") if surrogat_raw else []
+    unixpriv_profiles  = parse_rlist(unixpriv_raw, "UNIXPRIV") if unixpriv_raw else []
+    facility_profiles  = parse_rlist(facility_raw, "FACILITY") if facility_raw else []
+    dataset_profiles   = parse_datasets(dataset_raw) if dataset_raw else []
+    tcicstrn_profiles  = parse_rlist(tcicstrn_raw, "TCICSTRN") if tcicstrn_raw else []
+    gcicstrn_profiles  = parse_gcicstrn(gcicstrn_raw) if gcicstrn_raw else []
 
     print(f"Parsed: {len(groups)} groups, {len(users)} users, "
           f"{len(surrogat_profiles)} surrogat profiles, "
