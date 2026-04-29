@@ -16,13 +16,13 @@ Current supported classes are GROUP, USER, FACILITY, SURROGAT, UNIXPRIV, DATASET
 #### Nodes
 - `RACF_Group`
 - `RACF_User`
-- `RACF_Resouce             -- SURROGAT, UNIXPRIV, FACILITY and CICS profiles`
+- `RACF_Resource             -- SURROGAT, UNIXPRIV, FACILITY and CICS profiles`
 - `RACF_Dataset`
 #### Edges
-- `RACF_MemberOf            -- User/SubGroup -> Group`
-- `RACF_HasPermission       -- User -> Resource`
-- `RACF_HasDatasetAccess    -- User -> Dataset`
-- `RACF_TargetsUser         -- Resource -> User`
+- `RACF_MemberOf            -- User/SubGroup    ->      Group`
+- `RACF_HasPermission       -- User             ->      Resource`
+- `RACF_HasDatasetAccess    -- User             ->      Dataset`
+- `RACF_TargetsUser         -- Resource         ->      User`
 
 ## Requirements:
 - `BloodHound >= 8.0`
