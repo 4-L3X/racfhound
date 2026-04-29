@@ -35,15 +35,6 @@ For icon upload:
 - `urllib3 >= 1.26.0`
 
 
-## Installation
-```bash
-# Clone the repo
-git clone https://github.com/Alexaruman/racfhound.git
-# Install the requirements
-cd racfhound
-pip install -r requirements.txt
-```
-
 ## Usage
 ### rh_collect.py
 ```bash
