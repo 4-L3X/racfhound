@@ -16,13 +16,13 @@ Current supported classes are GROUP, USER, FACILITY, SURROGAT, UNIXPRIV, DATASET
 #### Nodes
 - `RACF_Group`
 - `RACF_User`
-- `RACF_Resouce             -- SURROGAT, UNIXPRIV, FACILITY and CICS profiles`
+- `RACF_Resource             -- SURROGAT, UNIXPRIV, FACILITY and CICS profiles`
 - `RACF_Dataset`
 #### Edges
-- `RACF_MemberOf            -- User/SubGroup -> Group`
-- `RACF_HasPermission       -- User -> Resource`
-- `RACF_HasDatasetAccess    -- User -> Dataset`
-- `RACF_TargetsUser         -- Resource -> User`
+- `RACF_MemberOf            -- User/SubGroup    ->      Group`
+- `RACF_HasPermission       -- User             ->      Resource`
+- `RACF_HasDatasetAccess    -- User             ->      Dataset`
+- `RACF_TargetsUser         -- Resource         ->      User`
 
 ## Requirements:
 - `BloodHound >= 8.0`
@@ -34,15 +34,6 @@ For icon upload:
 - `requests >= 2.28.0`
 - `urllib3 >= 1.26.0`
 
-
-## Installation
-```bash
-# Clone the repo
-git clone https://github.com/Alexaruman/racfhound.git
-# Install the requirements
-cd racfhound
-pip install -r requirements.txt
-```
 
 ## Usage
 ### rh_collect.py
