@@ -37,7 +37,7 @@ For icon upload:
 ## Installation
 ```bash
 # Clone the repo
-git clone https://github.com/Alexaruman/racfhound.git
+git clone https://github.com/4-L3X/racfhound.git
 # Install the requirements
 cd racfhound
 pip install -r requirements.txt
