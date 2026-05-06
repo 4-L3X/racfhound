@@ -464,7 +464,6 @@ def _ensure_user(graph, uid):
     if uid not in graph.nodes:
         p = Properties()
         p.set_property("name",     uid)
-        p.set_property("objectid", uid)
         graph.add_node_without_validation(Node(id=uid, kinds=["RACF_User", "Base"], properties=p))
 
 
@@ -472,7 +471,6 @@ def _ensure_group(graph, gid):
     if gid not in graph.nodes:
         p = Properties()
         p.set_property("name",     gid)
-        p.set_property("objectid", gid)
         graph.add_node_without_validation(Node(id=gid, kinds=["RACF_Group", "Base"], properties=p))
 
 
@@ -571,7 +569,6 @@ def build_graph(groups, users, surrogat_profiles, unixpriv_profiles, facility_pr
     for g in groups:
         p = Properties()
         p.set_property("name",     g["name"])
-        p.set_property("objectid", g["name"])
         if g["owner"]:
             p.set_property("owner", g["owner"])
         if g["created"]:
@@ -589,7 +586,6 @@ def build_graph(groups, users, surrogat_profiles, unixpriv_profiles, facility_pr
     for u in users:
         p = Properties()
         p.set_property("name",     u["name"])
-        p.set_property("objectid", u["name"])
         if u["fullname"]:
             p.set_property("displayname", u["fullname"])
         if u["owner"]:
@@ -634,7 +630,6 @@ def build_graph(groups, users, surrogat_profiles, unixpriv_profiles, facility_pr
         pid = f"SURROGAT:{sp['profile']}"
         p = Properties()
         p.set_property("name",        sp["profile"])
-        p.set_property("objectid",    pid)
         p.set_property("class",       "SURROGAT")
         if sp["owner"]:
             p.set_property("owner",   sp["owner"])
@@ -668,7 +663,6 @@ def build_graph(groups, users, surrogat_profiles, unixpriv_profiles, facility_pr
         pid = f"UNIXPRIV:{up['profile']}"
         p = Properties()
         p.set_property("name",     up["profile"])
-        p.set_property("objectid", pid)
         p.set_property("class",    "UNIXPRIV")
         if up["owner"]:
             p.set_property("owner", up["owner"])
@@ -702,7 +696,6 @@ def build_graph(groups, users, surrogat_profiles, unixpriv_profiles, facility_pr
         pid = f"FACILITY:{fp['profile']}"
         p = Properties()
         p.set_property("name",     fp["profile"])
-        p.set_property("objectid", pid)
         p.set_property("class",    "FACILITY")
         if fp["owner"]:
             p.set_property("owner", fp["owner"])
@@ -730,7 +723,6 @@ def build_graph(groups, users, surrogat_profiles, unixpriv_profiles, facility_pr
         pid = f"TCICSTRN:{tp['profile']}"
         p = Properties()
         p.set_property("name",     tp["profile"])
-        p.set_property("objectid", pid)
         p.set_property("class",    "TCICSTRN")
         if tp["owner"]:
             p.set_property("owner", tp["owner"])
@@ -758,7 +750,6 @@ def build_graph(groups, users, surrogat_profiles, unixpriv_profiles, facility_pr
         pid = f"GCICSTRN:{gp['profile']}"
         p = Properties()
         p.set_property("name",     gp["profile"])
-        p.set_property("objectid", pid)
         p.set_property("class",    "GCICSTRN")
         if gp["owner"]:
             p.set_property("owner", gp["owner"])
@@ -795,7 +786,6 @@ def build_graph(groups, users, surrogat_profiles, unixpriv_profiles, facility_pr
         did = f"DATASET:{dp['profile']}"
         p = Properties()
         p.set_property("name",     dp["profile"])
-        p.set_property("objectid", did)
         p.set_property("class",    "DATASET")
         if dp["owner"]:
             p.set_property("owner", dp["owner"])
