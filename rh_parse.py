@@ -43,9 +43,6 @@ FACILITY_FILE = "racfhound_FACILITY.txt"
 DATASET_FILE  = "racfhound_DATASET.txt"
 TCICSTRN_FILE = "racfhound_TCICSTRN.txt"
 GCICSTRN_FILE = "racfhound_GCICSTRN.txt"
-OUTPUT_FILE   = "racfhound.json"
-
-
 # ── Parsers ────────────────────────────────────────────────────────────────────
 
 def parse_groups(text):
