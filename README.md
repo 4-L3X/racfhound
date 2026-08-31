@@ -12,6 +12,9 @@ In a journey to learn more about the world, I decided to build a BloodHound inge
 
 Current supported classes are GROUP, USER, FACILITY, SURROGAT, UNIXPRIV, DATASET, GCICSTRN and TCICSTRN.
 
+## Note
+If you're allowed to do an IRRDBU00 database unload, have a look at Jonathan Prince's [RACFHound](https://github.com/JonathanPrince/racfhound/tree/master). It's a far more extensive ingestor.
+
 ## Graph Nodes and Edges
 #### Nodes
 - `RACF_Group`
